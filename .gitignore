@@ -1,0 +1,14 @@
+.DS_Store
+
+# Java
+*.class
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# Gradle
+.gradle/
+build/
