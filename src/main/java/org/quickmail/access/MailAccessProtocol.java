@@ -1,16 +1,18 @@
 package org.quickmail.access;
 
+import javax.mail.MessagingException;
+
 import org.quickmail.Mail;
 
 public interface MailAccessProtocol extends AutoCloseable {
-    void connect(String host);
-    void connect(String host, int port);
-    void disconnect();
+    void connect(String host, String user, String password) throws MessagingException;
+    void connect(String host, int port, String user, String password) throws MessagingException;
+    void disconnect() throws MessagingException;
     boolean isConnected();
-    void login(String userName, String password);
-    int getMessageCount();
-    Mail retrieveMessage(int id);
-    void deleteMessage(int id);
+    int getMessageCount() throws MessagingException;
+    int getNewMessageCount() throws MessagingException;
+    Mail retrieveMessage(int messageNumber) throws MessagingException;
+    void deleteMessage(int messageNumber) throws MessagingException;
     int getConnectionTimeout();
     void setConnectionTimeout(int timeout);
     int getSocketTimeout();

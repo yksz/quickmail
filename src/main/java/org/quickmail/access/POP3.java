@@ -1,12 +1,14 @@
 package org.quickmail.access;
 
+import javax.mail.MessagingException;
+
 import org.quickmail.Mail;
 
 public class POP3 implements MailAccessProtocol {
     private MailAccessProtocol impl;
 
     public POP3() {
-        impl = new MailAccessProtocolImpl(MailAccessProtocolImpl.POP3);
+        impl = new MailAccessProtocolImpl(MailAccessProtocolImpl.PROTOCOL_POP3);
     }
 
     @Override
@@ -15,17 +17,17 @@ public class POP3 implements MailAccessProtocol {
     }
 
     @Override
-    public void connect(String host) {
-        impl.connect(host);
+    public void connect(String host, String user, String password) throws MessagingException {
+        impl.connect(host, user, password);
     }
 
     @Override
-    public void connect(String host, int port) {
-        impl.connect(host, port);
+    public void connect(String host, int port, String user, String password) throws MessagingException {
+        impl.connect(host, port, user, password);
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect() throws MessagingException {
         impl.disconnect();
     }
 
@@ -35,23 +37,23 @@ public class POP3 implements MailAccessProtocol {
     }
 
     @Override
-    public void login(String userName, String password) {
-        impl.login(userName, password);
-    }
-
-    @Override
-    public int getMessageCount() {
+    public int getMessageCount() throws MessagingException {
         return impl.getMessageCount();
     }
 
     @Override
-    public Mail retrieveMessage(int id) {
-        return impl.retrieveMessage(id);
+    public int getNewMessageCount() throws MessagingException {
+        return impl.getNewMessageCount();
     }
 
     @Override
-    public void deleteMessage(int id) {
-        impl.deleteMessage(id);
+    public Mail retrieveMessage(int messageNumber) throws MessagingException {
+        return impl.retrieveMessage(messageNumber);
+    }
+
+    @Override
+    public void deleteMessage(int messageNumber) throws MessagingException {
+        impl.deleteMessage(messageNumber);
     }
 
     @Override
