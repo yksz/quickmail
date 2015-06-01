@@ -5,14 +5,14 @@ import javax.mail.MessagingException;
 import org.quickmail.Mail;
 
 public class POP3 implements MailAccessProtocol {
-    private MailAccessProtocol impl;
+    private MailAccessProtocolImpl impl;
 
     public POP3() {
         impl = new MailAccessProtocolImpl(MailAccessProtocolImpl.PROTOCOL_POP3);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws MessagingException {
         impl.close();
     }
 
@@ -42,11 +42,6 @@ public class POP3 implements MailAccessProtocol {
     }
 
     @Override
-    public int getNewMessageCount() throws MessagingException {
-        return impl.getNewMessageCount();
-    }
-
-    @Override
     public Mail retrieveMessage(int messageNumber) throws MessagingException {
         return impl.retrieveMessage(messageNumber);
     }
@@ -54,6 +49,26 @@ public class POP3 implements MailAccessProtocol {
     @Override
     public void deleteMessage(int messageNumber) throws MessagingException {
         impl.deleteMessage(messageNumber);
+    }
+
+    @Override
+    public boolean isSslEnabled() {
+        return impl.isSslEnabled();
+    }
+
+    @Override
+    public void setSslEnabled(boolean sslEnabled) {
+        impl.setSslEnabled(sslEnabled);
+    }
+
+    @Override
+    public boolean isStarttlsEnabled() {
+        return impl.isStarttlsEnabled();
+    }
+
+    @Override
+    public void setStarttlsEnabled(boolean starttlsEnabled) {
+        impl.setStarttlsEnabled(starttlsEnabled);
     }
 
     @Override

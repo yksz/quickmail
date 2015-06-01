@@ -5,14 +5,14 @@ import javax.mail.MessagingException;
 import org.quickmail.Mail;
 
 public class IMAP implements MailAccessProtocol {
-    private MailAccessProtocol impl;
+    private MailAccessProtocolImpl impl;
 
     public IMAP() {
         impl = new MailAccessProtocolImpl(MailAccessProtocolImpl.PROTOCOL_IMAP);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws MessagingException {
         impl.close();
     }
 
@@ -42,11 +42,6 @@ public class IMAP implements MailAccessProtocol {
     }
 
     @Override
-    public int getNewMessageCount() throws MessagingException {
-        return impl.getNewMessageCount();
-    }
-
-    @Override
     public Mail retrieveMessage(int messageNumber) throws MessagingException {
         return impl.retrieveMessage(messageNumber);
     }
@@ -54,6 +49,26 @@ public class IMAP implements MailAccessProtocol {
     @Override
     public void deleteMessage(int messageNumber) throws MessagingException {
         impl.deleteMessage(messageNumber);
+    }
+
+    @Override
+    public boolean isSslEnabled() {
+        return impl.isSslEnabled();
+    }
+
+    @Override
+    public void setSslEnabled(boolean sslEnabled) {
+        impl.setSslEnabled(sslEnabled);
+    }
+
+    @Override
+    public boolean isStarttlsEnabled() {
+        return impl.isStarttlsEnabled();
+    }
+
+    @Override
+    public void setStarttlsEnabled(boolean starttlsEnabled) {
+        impl.setStarttlsEnabled(starttlsEnabled);
     }
 
     @Override
@@ -74,5 +89,13 @@ public class IMAP implements MailAccessProtocol {
     @Override
     public void setSocketTimeout(int timeout) {
         impl.setSocketTimeout(timeout);
+    }
+
+    public String getMailbox() {
+        return impl.getMailbox();
+    }
+
+    public void setMailbox(String mailbox) {
+        impl.setMailbox(mailbox);
     }
 }
