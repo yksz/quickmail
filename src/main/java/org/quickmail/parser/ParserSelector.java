@@ -1,7 +1,9 @@
 package org.quickmail.parser;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -10,7 +12,7 @@ public final class ParserSelector {
     private static final ParserSelector instance = new ParserSelector();
     private final Object lock = new Object();
     private MessageParser defaultParser;
-    private List<ParserSelectingRule> rules;
+    private final List<ParserSelectingRule> rules = new LinkedList<>();
 
     public static ParserSelector getInstance() {
         return instance;
@@ -40,8 +42,11 @@ public final class ParserSelector {
     private MessageParser selectParserByRules(Message message) throws MessagingException {
         for (ParserSelectingRule rule : rules) {
             String[] headers = message.getHeader(rule.getHeader());
+            if (headers == null) {
+                return null;
+            }
             for (String header : headers) {
-                if (header.matches(rule.getRegex())) {
+                if (Pattern.compile(rule.getRegex()).matcher(header).find()) {
                     return rule.getParser();
                 }
             }
@@ -55,9 +60,21 @@ public final class ParserSelector {
         }
     }
 
-    public void addParserSelectingRule(ParserSelectingRule rule) {
+    public void addRule(ParserSelectingRule rule) {
         synchronized (lock) {
             rules.add(rule);
+        }
+    }
+
+    public void removeRule(ParserSelectingRule rule) {
+        synchronized (lock) {
+            rules.remove(rule);
+        }
+    }
+
+    public void clearRules() {
+        synchronized (lock) {
+            rules.clear();
         }
     }
 }
