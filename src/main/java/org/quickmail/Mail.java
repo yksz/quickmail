@@ -96,4 +96,31 @@ public class Mail {
     public void addAttachment(Attachment... attachments) {
         this.attachments.addAll(Arrays.asList(attachments));
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Mail [from=");
+        builder.append(fromAddress);
+        builder.append(", to=");
+        builder.append(toAddresses);
+        builder.append(", cc=");
+        builder.append(ccAddresses);
+        builder.append(", bcc=");
+        builder.append(bccAddresses);
+        builder.append(", replyTo=");
+        builder.append(replyToAddresses);
+        builder.append(", sentDate=");
+        builder.append(sentDate);
+        builder.append(", subject=");
+        builder.append(subject);
+        builder.append(", textMessage=");
+        builder.append(textMessage);
+        builder.append(", htmlMessage=");
+        builder.append(htmlMessage);
+        builder.append(", attachments=");
+        builder.append(attachments);
+        builder.append("]");
+        return builder.toString();
+    }
 }
