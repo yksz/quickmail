@@ -19,8 +19,11 @@ public class SMTP implements AutoCloseable {
 
     private final String protocol;
     private final MessageComposer composer;
+    private boolean sslEnabled;
+    private boolean starttlsEnabled;
     private int connectionTimeout = 30000; // [ms]
     private int socketTimeout = 30000; // [ms]
+    private Session session;
     private Transport transport;
 
     public SMTP() {
@@ -29,37 +32,37 @@ public class SMTP implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws MessagingException {
         disconnect();
     }
 
     public void connect(String host) throws MessagingException {
-        connect(host, getDefaultPort());
+        Objects.requireNonNull(host, "host must not be null");
+        transport = getTransport(host, PORT_SMTP, PORT_SMTPS, false);
+        transport.connect();
     }
 
     public void connect(String host, int port) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, port, false);
+        transport = getTransport(host, port, port, false);
         transport.connect();
     }
 
     public void connect(String host, String user, String password) throws MessagingException {
-        connect(host, getDefaultPort(), user, password);
+        Objects.requireNonNull(host, "host must not be null");
+        transport = getTransport(host, PORT_SMTP, PORT_SMTPS, true);
+        transport.connect(user, password);
     }
 
     public void connect(String host, int port, String user, String password) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, port, true);
+        transport = getTransport(host, port, port, true);
         transport.connect(user, password);
     }
 
-    private int getDefaultPort() {
-        return PORT_SMTP;
-    }
-
-    private Transport getTransport(String host, int port, boolean auth) {
-        Properties props = createSessionProperties(host, port, auth);
-        Session session = Session.getInstance(props);
+    private Transport getTransport(String host, int port, int sslPort, boolean auth) {
+        Properties props = createSessionProperties(host, port, sslPort, auth);
+        session = Session.getInstance(props);
         try {
             return session.getTransport(protocol);
         } catch (NoSuchProviderException e) {
@@ -67,13 +70,19 @@ public class SMTP implements AutoCloseable {
         }
     }
 
-    private Properties createSessionProperties(String host, int port, boolean auth) {
+    private Properties createSessionProperties(String host, int port, int sslPort, boolean auth) {
         Properties props = new Properties();
         props.put("mail." + protocol + ".host", host);
         props.put("mail." + protocol + ".port", port);
         props.put("mail." + protocol + ".connectiontimeout", connectionTimeout);
         props.put("mail." + protocol + ".timeout", socketTimeout);
         props.put("mail." + protocol + ".auth", auth);
+        props.put("mail." + protocol + ".starttls.enable", starttlsEnabled);
+        if (sslEnabled) {
+            props.put("mail." + protocol + ".socketFactory.port", sslPort);
+            props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.put("mail." + protocol + ".socketFactory.fallback", false);
+        }
         return props;
     }
 
@@ -93,12 +102,28 @@ public class SMTP implements AutoCloseable {
 
     public void send(Mail mail) throws MessagingException {
         Objects.requireNonNull(mail, "mail must not be null");
-        if (transport == null || !transport.isConnected()) {
+        if (session == null || transport == null || !transport.isConnected()) {
             throw new IllegalStateException("Not connecting to server");
         }
-        Message message = composer.compose(mail);
+        Message message = composer.compose(mail, session);
         Address[] addrs = message.getAllRecipients();
         transport.sendMessage(message, addrs);
+    }
+
+    public boolean isSslEnabled() {
+        return sslEnabled;
+    }
+
+    public void setSslEnabled(boolean sslEnabled) {
+        this.sslEnabled = sslEnabled;
+    }
+
+    public boolean isStarttlsEnabled() {
+        return starttlsEnabled;
+    }
+
+    public void setStarttlsEnabled(boolean starttlsEnabled) {
+        this.starttlsEnabled = starttlsEnabled;
     }
 
     public int getConnectionTimeout() {
