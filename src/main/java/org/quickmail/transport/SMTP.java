@@ -6,16 +6,19 @@ import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.Transport;
 
 import org.quickmail.Mail;
 
 public class SMTP implements AutoCloseable {
-    private static final String PROTOCOL_SMTP = "smtp";
-    private static final int PORT_SMTP = 25;
-    private static final int PORT_SMTPS = 465;
+    static final String PROTOCOL_SMTP = "smtp";
+    static final String PROTOCOL_POP3 = "pop3";
+    static final int PORT_SMTP = 25;
+    static final int PORT_SMTPS = 465;
+    static final int PORT_POP3 = 110;
+    static final int PORT_POP3S = 995;
 
     private final String protocol;
     private final MessageComposer composer;
@@ -25,6 +28,7 @@ public class SMTP implements AutoCloseable {
     private int socketTimeout = 30000; // [ms]
     private Session session;
     private Transport transport;
+    private Store store;
 
     public SMTP() {
         this.protocol = PROTOCOL_SMTP;
@@ -38,36 +42,40 @@ public class SMTP implements AutoCloseable {
 
     public void connect(String host) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, PORT_SMTP, PORT_SMTPS, false);
-        transport.connect();
+        Properties props = createSessionProperties(host, PORT_SMTP, PORT_SMTPS, false);
+        session = Session.getInstance(props);
+        connect(session);
     }
 
     public void connect(String host, int port) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, port, port, false);
-        transport.connect();
+        Properties props = createSessionProperties(host, port, port, false);
+        session = Session.getInstance(props);
+        connect(session);
     }
 
     public void connect(String host, String user, String password) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, PORT_SMTP, PORT_SMTPS, true);
-        transport.connect(user, password);
+        Properties props = createSessionProperties(host, PORT_SMTP, PORT_SMTPS, true);
+        session = Session.getInstance(props);
+        connect(session, user, password);
     }
 
     public void connect(String host, int port, String user, String password) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        transport = getTransport(host, port, port, true);
-        transport.connect(user, password);
+        Properties props = createSessionProperties(host, port, port, true);
+        session = Session.getInstance(props);
+        connect(session, user, password);
     }
 
-    private Transport getTransport(String host, int port, int sslPort, boolean auth) {
-        Properties props = createSessionProperties(host, port, sslPort, auth);
-        session = Session.getInstance(props);
-        try {
-            return session.getTransport(protocol);
-        } catch (NoSuchProviderException e) {
-            throw new AssertionError("Unknown protocol: " + protocol);
-        }
+    private void connect(Session session) throws MessagingException {
+        transport = session.getTransport(protocol);
+        transport.connect();
+    }
+
+    private void connect(Session session, String user, String password) throws MessagingException {
+        transport = session.getTransport(protocol);
+        transport.connect(user, password);
     }
 
     private Properties createSessionProperties(String host, int port, int sslPort, boolean auth) {
@@ -76,7 +84,7 @@ public class SMTP implements AutoCloseable {
         props.put("mail." + protocol + ".port", port);
         props.put("mail." + protocol + ".connectiontimeout", connectionTimeout);
         props.put("mail." + protocol + ".timeout", socketTimeout);
-        props.put("mail." + protocol + ".auth", auth);
+        props.put("mail." + protocol + ".auth", auth); // SMTP-AUTH
         props.put("mail." + protocol + ".starttls.enable", starttlsEnabled);
         if (sslEnabled) {
             props.put("mail." + protocol + ".socketFactory.port", sslPort);
@@ -86,10 +94,52 @@ public class SMTP implements AutoCloseable {
         return props;
     }
 
+    /**
+     * Connect By POP before SMTP.
+     *
+     * @param host
+     * @param user
+     * @param password
+     * @throws MessagingException
+     */
+    public void connectByPbS(String host, String user, String password) throws MessagingException {
+        Objects.requireNonNull(host, "host must not be null");
+        Properties props = createSessionProperties(host, PORT_POP3, PORT_POP3S, false);
+        session = Session.getInstance(props);
+        connectByPOP3(session, user, password);
+        connect(session);
+    }
+
+    /**
+     * Connect By POP before SMTP.
+     *
+     * @param host
+     * @param port
+     * @param user
+     * @param password
+     * @throws MessagingException
+     */
+    public void connectByPbS(String host, int port, String user, String password) throws MessagingException {
+        Objects.requireNonNull(host, "host must not be null");
+        Properties props = createSessionProperties(host, port, port, false);
+        session = Session.getInstance(props);
+        connectByPOP3(session, user, password);
+        connect(session);
+    }
+
+    private void connectByPOP3(Session session, String user, String password) throws MessagingException {
+        store = session.getStore(PROTOCOL_POP3);
+        store.connect(user, password);
+    }
+
     public void disconnect() throws MessagingException {
         if (transport != null && transport.isConnected()) {
             transport.close();
             transport = null;
+        }
+        if (store != null && store.isConnected()) {
+            store.close();
+            store = null;
         }
     }
 
