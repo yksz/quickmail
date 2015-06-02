@@ -7,7 +7,6 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
@@ -45,23 +44,20 @@ class MailAccessProtocolImpl implements MailAccessProtocol {
     public void connect(String host, String user, String password) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
         Properties props = createSessionProperties(host);
-        connect(props, user, password);
+        Session session = Session.getInstance(props);
+        connect(session, user, password);
     }
 
     @Override
     public void connect(String host, int port, String user, String password) throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
         Properties props = createSessionProperties(host, port, port);
-        connect(props, user, password);
+        Session session = Session.getInstance(props);
+        connect(session, user, password);
     }
 
-    private void connect(Properties props, String user, String password) throws MessagingException {
-        Session session = Session.getInstance(props);
-        try {
-            store = session.getStore(protocol);
-        } catch (NoSuchProviderException e) {
-            throw new AssertionError("Unknown protocol: " + protocol);
-        }
+    private void connect(Session session, String user, String password) throws MessagingException {
+        store = session.getStore(protocol);
         store.connect(user, password);
         folder = store.getFolder(mailbox);
         folder.open(Folder.READ_WRITE);
