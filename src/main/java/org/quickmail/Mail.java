@@ -13,8 +13,8 @@ public class Mail {
     private List<String> replyToAddresses = new LinkedList<>();
     private Date sentDate;
     private String subject;
-    private String textMessage;
-    private String htmlMessage;
+    private TextMessageBody textMessage;
+    private HtmlMessageBody htmlMessage;
     private List<Attachment> attachments = new LinkedList<>();
 
     public String getFrom() {
@@ -73,19 +73,19 @@ public class Mail {
         this.subject = subject;
     }
 
-    public String getTextMessage() {
+    public TextMessageBody getTextMessage() {
         return textMessage;
     }
 
-    public void setTextMessage(String message) {
+    public void setTextMessage(TextMessageBody message) {
         this.textMessage = message;
     }
 
-    public String getHtmlMessage() {
+    public HtmlMessageBody getHtmlMessage() {
         return htmlMessage;
     }
 
-    public void setHtmlMessage(String message) {
+    public void setHtmlMessage(HtmlMessageBody message) {
         this.htmlMessage = message;
     }
 
