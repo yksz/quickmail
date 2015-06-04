@@ -2,13 +2,9 @@ package org.quickmail;
 
 public class TextMessageBody {
     private static final String MIME_TYPE = "text/plain";
-    private final String content;
+    private String content;
     private String charset;
-    private String encoding = "7bit";
-
-    public TextMessageBody(String content) {
-        this.content = content;
-    }
+    private String encoding;
 
     public static String getMimeType() {
         return MIME_TYPE;
@@ -16,6 +12,10 @@ public class TextMessageBody {
 
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getCharset() {

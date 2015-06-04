@@ -6,55 +6,71 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Mail {
-    private String fromAddress;
-    private List<String> toAddresses = new LinkedList<>();
-    private List<String> ccAddresses = new LinkedList<>();
-    private List<String> bccAddresses = new LinkedList<>();
-    private List<String> replyToAddresses = new LinkedList<>();
+    private String fromAddr;
+    private List<String> toAddrs = new LinkedList<>();
+    private List<String> ccAddrs = new LinkedList<>();
+    private List<String> bccAddrs = new LinkedList<>();
+    private List<String> replyToAddrs = new LinkedList<>();
     private Date sentDate;
     private String subject;
-    private TextMessageBody textMessage;
-    private HtmlMessageBody htmlMessage;
+    private TextMessageBody textMsg;
+    private HtmlMessageBody htmlMsg;
     private List<Attachment> attachments = new LinkedList<>();
 
     public String getFrom() {
-        return fromAddress;
+        return fromAddr;
     }
 
     public void setFrom(String address) {
-        this.fromAddress = address;
+        this.fromAddr = address;
     }
 
     public List<String> getTo() {
-        return toAddresses;
+        return toAddrs;
     }
 
     public void addTo(String... addresses) {
-        this.toAddresses.addAll(Arrays.asList(addresses));
+        addTo(Arrays.asList(addresses));
+    }
+
+    public void addTo(List<String> addresses) {
+        this.toAddrs.addAll(addresses);
     }
 
     public List<String> getCc() {
-        return ccAddresses;
+        return ccAddrs;
     }
 
     public void addCc(String... addresses) {
-        this.ccAddresses.addAll(Arrays.asList(addresses));
+        addCc(Arrays.asList(addresses));
+    }
+
+    public void addCc(List<String> addresses) {
+        this.ccAddrs.addAll(addresses);
     }
 
     public List<String> getBcc() {
-        return bccAddresses;
+        return bccAddrs;
     }
 
     public void addBcc(String... addresses) {
-        this.bccAddresses.addAll(Arrays.asList(addresses));
+        addBcc(Arrays.asList(addresses));
+    }
+
+    public void addBcc(List<String> addresses) {
+        this.bccAddrs.addAll(addresses);
     }
 
     public List<String> getReplyTo() {
-        return replyToAddresses;
+        return replyToAddrs;
     }
 
     public void addReplyTo(String... addresses) {
-        this.replyToAddresses.addAll(Arrays.asList(addresses));
+        addReplyTo(Arrays.asList(addresses));
+    }
+
+    public void addReplyTo(List<String> addresses) {
+        this.replyToAddrs.addAll(addresses);
     }
 
     public Date getSentDate() {
@@ -74,19 +90,19 @@ public class Mail {
     }
 
     public TextMessageBody getTextMessage() {
-        return textMessage;
+        return textMsg;
     }
 
     public void setTextMessage(TextMessageBody message) {
-        this.textMessage = message;
+        this.textMsg = message;
     }
 
     public HtmlMessageBody getHtmlMessage() {
-        return htmlMessage;
+        return htmlMsg;
     }
 
     public void setHtmlMessage(HtmlMessageBody message) {
-        this.htmlMessage = message;
+        this.htmlMsg = message;
     }
 
     public List<Attachment> getAttachments() {
@@ -94,30 +110,34 @@ public class Mail {
     }
 
     public void addAttachment(Attachment... attachments) {
-        this.attachments.addAll(Arrays.asList(attachments));
+        addAttachment(Arrays.asList(attachments));
+    }
+
+    public void addAttachment(List<Attachment> attachments) {
+        this.attachments.addAll(attachments);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Mail [from=");
-        builder.append(fromAddress);
+        builder.append(fromAddr);
         builder.append(", to=");
-        builder.append(toAddresses);
+        builder.append(toAddrs);
         builder.append(", cc=");
-        builder.append(ccAddresses);
+        builder.append(ccAddrs);
         builder.append(", bcc=");
-        builder.append(bccAddresses);
+        builder.append(bccAddrs);
         builder.append(", replyTo=");
-        builder.append(replyToAddresses);
+        builder.append(replyToAddrs);
         builder.append(", sentDate=");
         builder.append(sentDate);
         builder.append(", subject=");
         builder.append(subject);
         builder.append(", textMessage=");
-        builder.append(textMessage);
+        builder.append(textMsg);
         builder.append(", htmlMessage=");
-        builder.append(htmlMessage);
+        builder.append(htmlMsg);
         builder.append(", attachments=");
         builder.append(attachments);
         builder.append("]");

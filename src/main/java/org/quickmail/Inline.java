@@ -2,10 +2,9 @@ package org.quickmail;
 
 import java.io.InputStream;
 
-public class Attachment {
+public class Inline {
     private String mimeType;
-    private String name;
-    private String charset;
+    private String id;
     private String encoding;
     private InputStream inputStream;
 
@@ -17,20 +16,12 @@ public class Attachment {
         this.mimeType = mimeType;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getEncoding() {
@@ -52,12 +43,10 @@ public class Attachment {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Attachment [mimeType=");
+        builder.append("Inline [mimeType=");
         builder.append(mimeType);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", charset=");
-        builder.append(charset);
+        builder.append(", id=");
+        builder.append(id);
         builder.append(", encoding=");
         builder.append(encoding);
         builder.append(", inputStream=");
