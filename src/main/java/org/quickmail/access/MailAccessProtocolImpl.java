@@ -119,6 +119,9 @@ class MailAccessProtocolImpl implements MailAccessProtocol {
 
     @Override
     public Mail retrieveMessage(int messageNumber) throws MessagingException {
+        if (messageNumber < 1) {
+            throw new IllegalArgumentException("messageNumber must not be less than 1");
+        }
         if (folder == null || !folder.isOpen()) {
             throw new IllegalStateException("Not connecting to server");
         }

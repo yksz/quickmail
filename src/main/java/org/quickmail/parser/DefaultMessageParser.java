@@ -1,6 +1,7 @@
 package org.quickmail.parser;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -33,6 +34,7 @@ public class DefaultMessageParser implements MessageParser {
         mail.addReplyTo(parseReplyTo(message));
         mail.setSentDate(parseSentDate(message));
         mail.setSubject(parseSubject(message));
+        mail.setSubjectCharset(parseSubjectCharset(message));
         MessageContent messageContent = parseMessageContent(message);
         mail.setTextMessage(messageContent.getTextMessage());
         mail.setHtmlMessage(messageContent.getHtmlMessage());
@@ -85,6 +87,26 @@ public class DefaultMessageParser implements MessageParser {
         return msg.getSubject();
     }
 
+    protected Charset parseSubjectCharset(Message msg) throws MessagingException {
+        String[] subject = msg.getHeader("Subject");
+        if (subject == null || subject.length == 0) {
+            return null;
+        }
+        return getCharset(subject[0]);
+    }
+
+    private Charset getCharset(String encodedWord) {
+        if (encodedWord == null) {
+            return null;
+        }
+        Pattern p = Pattern.compile("^=\\?([\\w\\-]+?)\\?");
+        Matcher m = p.matcher(encodedWord);
+        if (m.find()) {
+            return Charset.forName(MimeUtility.javaCharset(m.group(1)));
+        }
+        return null;
+    }
+
     protected MessageContent parseMessageContent(Message msg) throws MessagingException {
         try {
             Object content = msg.getContent();
@@ -117,9 +139,12 @@ public class DefaultMessageParser implements MessageParser {
         }
     }
 
-    private String getCharset(ContentType contentType) {
+    private Charset getCharset(ContentType contentType) {
         String charset = contentType.getParameter("charset");
-        return MimeUtility.javaCharset(charset);
+        if (charset == null) {
+            return null;
+        }
+        return Charset.forName(MimeUtility.javaCharset(charset));
     }
 
     /**
@@ -206,41 +231,26 @@ public class DefaultMessageParser implements MessageParser {
     }
 
     private Attachment createAttachment(MimePart mimePart) throws MessagingException, IOException {
-        String encodeFileName = mimePart.getFileName();
-        String decodeFileName = null;
-        if (encodeFileName != null) {
-            decodeFileName = MimeUtility.decodeText(encodeFileName);
+        String encodedFileName = mimePart.getFileName();
+        String decodedFileName = null;
+        if (encodedFileName != null) {
+            decodedFileName = MimeUtility.decodeText(encodedFileName);
         }
         ContentType contentType = new ContentType(mimePart.getContentType());
-        String charset = getAttachmentCharset(contentType, encodeFileName);
-        Attachment attachment = new Attachment();
+        Attachment attachment = new Attachment(mimePart.getInputStream());
         attachment.setMimeType(contentType.getBaseType());
-        attachment.setName(decodeFileName);
-        attachment.setCharset(charset);
+        attachment.setCharset(getCharset(contentType));
+        attachment.setName(decodedFileName, getCharset(encodedFileName));
         attachment.setEncoding(mimePart.getEncoding());
-        attachment.setInputStream(mimePart.getInputStream());
         return attachment;
-    }
-
-    private String getAttachmentCharset(ContentType contentType, String encodeFileName) {
-        String charset = getCharset(contentType);
-        if (charset == null && encodeFileName != null) {
-            Pattern p = Pattern.compile("^=\\?([\\w\\-]+?)\\?");
-            Matcher m = p.matcher(encodeFileName);
-            if (m.find()) {
-                charset = MimeUtility.javaCharset(m.group(1));
-            }
-        }
-        return charset;
     }
 
     private Inline createInline(MimePart mimePart) throws MessagingException, IOException {
         ContentType contentType = new ContentType(mimePart.getContentType());
-        Inline inline = new Inline();
+        Inline inline = new Inline(mimePart.getInputStream());
         inline.setMimeType(contentType.getBaseType());
         inline.setId(mimePart.getContentID());
         inline.setEncoding(mimePart.getEncoding());
-        inline.setInputStream(mimePart.getInputStream());
         return inline;
     }
 }

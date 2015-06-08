@@ -1,9 +1,9 @@
 package org.quickmail.transport;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 
-import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -21,7 +21,6 @@ public class SMTP implements AutoCloseable {
     static final int PORT_POP3S = 995;
 
     private final String protocol;
-    private final MessageComposer composer;
     private boolean sslEnabled;
     private boolean starttlsEnabled;
     private int connectionTimeout = 30000; // [ms]
@@ -32,7 +31,6 @@ public class SMTP implements AutoCloseable {
 
     public SMTP() {
         this.protocol = PROTOCOL_SMTP;
-        this.composer = new MessageComposer();
     }
 
     @Override
@@ -155,9 +153,13 @@ public class SMTP implements AutoCloseable {
         if (session == null || transport == null || !transport.isConnected()) {
             throw new IllegalStateException("Not connecting to server");
         }
-        Message message = composer.compose(mail, session);
-        Address[] addrs = message.getAllRecipients();
-        transport.sendMessage(message, addrs);
+        try {
+            Message message = new MessageComposer(session).compose(mail);
+            message.writeTo(System.out);
+            //transport.sendMessage(message, message.getAllRecipients());
+        } catch (IOException e) {
+            throw new MessagingException("", e);
+        }
     }
 
     public boolean isSslEnabled() {

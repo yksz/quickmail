@@ -1,12 +1,33 @@
 package org.quickmail;
 
+import java.io.File;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class Inline {
+    private final File file;
+    private final InputStream inputStream;
     private String mimeType;
     private String id;
     private String encoding;
-    private InputStream inputStream;
+
+    public Inline(File file) {
+        this.file = Objects.requireNonNull(file, "file must not be null");
+        this.inputStream = null;
+    }
+
+    public Inline(InputStream inputStream) {
+        this.inputStream = Objects.requireNonNull(inputStream, "inputStream must not be null");
+        this.file = null;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 
     public String getMimeType() {
         return mimeType;
@@ -30,14 +51,6 @@ public class Inline {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
-    }
-
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
     }
 
     @Override

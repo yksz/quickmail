@@ -1,18 +1,24 @@
 package org.quickmail;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class HtmlMessageBody {
     private static final String MIME_TYPE = "text/html";
+    private static final String SUB_TYPE = "html";
     private String content;
-    private String charset;
+    private Charset charset;
     private String encoding;
-    private List<Inline> inlines = new LinkedList<>();
+    private final List<Inline> inlines = new LinkedList<>();
 
     public static String getMimeType() {
         return MIME_TYPE;
+    }
+
+    public static String getSubType() {
+        return SUB_TYPE;
     }
 
     public String getContent() {
@@ -23,11 +29,11 @@ public class HtmlMessageBody {
         this.content = content;
     }
 
-    public String getCharset() {
+    public Charset getCharset() {
         return charset;
     }
 
-    public void setCharset(String charset) {
+    public void setCharset(Charset charset) {
         this.charset = charset;
     }
 
@@ -39,12 +45,20 @@ public class HtmlMessageBody {
         this.encoding = encoding;
     }
 
+    public List<Inline> getInlines() {
+        return inlines;
+    }
+
     public void addInline(Inline... inlines) {
         addInline(Arrays.asList(inlines));
     }
 
     public void addInline(List<Inline> inlines) {
         this.inlines.addAll(inlines);
+    }
+
+    public boolean hasInline() {
+        return !inlines.isEmpty();
     }
 
     @Override

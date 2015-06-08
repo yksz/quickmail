@@ -1,5 +1,6 @@
 package org.quickmail;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -7,15 +8,16 @@ import java.util.List;
 
 public class Mail {
     private String fromAddr;
-    private List<String> toAddrs = new LinkedList<>();
-    private List<String> ccAddrs = new LinkedList<>();
-    private List<String> bccAddrs = new LinkedList<>();
-    private List<String> replyToAddrs = new LinkedList<>();
+    private final List<String> toAddrs = new LinkedList<>();
+    private final List<String> ccAddrs = new LinkedList<>();
+    private final List<String> bccAddrs = new LinkedList<>();
+    private final List<String> replyToAddrs = new LinkedList<>();
     private Date sentDate;
     private String subject;
+    private Charset subjectCharset;
     private TextMessageBody textMsg;
     private HtmlMessageBody htmlMsg;
-    private List<Attachment> attachments = new LinkedList<>();
+    private final List<Attachment> attachments = new LinkedList<>();
 
     public String getFrom() {
         return fromAddr;
@@ -35,6 +37,10 @@ public class Mail {
 
     public void addTo(List<String> addresses) {
         this.toAddrs.addAll(addresses);
+    }
+
+    public void clearTo() {
+        toAddrs.clear();
     }
 
     public List<String> getCc() {
@@ -89,6 +95,19 @@ public class Mail {
         this.subject = subject;
     }
 
+    public void setSubject(String subject, Charset charset) {
+        this.subject = subject;
+        this.subjectCharset = charset;
+    }
+
+    public Charset getSubjectCharset() {
+        return subjectCharset;
+    }
+
+    public void setSubjectCharset(Charset subjectCharset) {
+        this.subjectCharset = subjectCharset;
+    }
+
     public TextMessageBody getTextMessage() {
         return textMsg;
     }
@@ -115,6 +134,18 @@ public class Mail {
 
     public void addAttachment(List<Attachment> attachments) {
         this.attachments.addAll(attachments);
+    }
+
+    public boolean hasTextMessage() {
+        return textMsg != null;
+    }
+
+    public boolean hasHtmlMessage() {
+        return htmlMsg != null;
+    }
+
+    public boolean hasAttachment() {
+        return !attachments.isEmpty();
     }
 
     @Override
