@@ -155,8 +155,7 @@ public class SMTP implements AutoCloseable {
         }
         try {
             Message message = new MessageComposer(session).compose(mail);
-            message.writeTo(System.out);
-            //transport.sendMessage(message, message.getAllRecipients());
+            transport.sendMessage(message, message.getAllRecipients());
         } catch (IOException e) {
             throw new MessagingException("", e);
         }
