@@ -128,27 +128,28 @@ public class DefaultMessageParser implements MessageParser {
                 parseTextpart((MimePart) msg, (String) content, msgContent);
                 return msgContent;
             } else {
-                throw new MessagingException("Unknown content-type at root: " + msg.getContentType());
+                ContentType ctype = new ContentType(msg.getContentType());
+                throw new MessagingException("Unknown content-type at root: " + ctype.getBaseType());
             }
         } catch (IOException e) {
             throw new MessagingException("", e);
         }
     }
 
-    private void parseTextpart(MimePart mimePart, String content, MessageContent msgContent) throws MessagingException {
-        if (mimePart.isMimeType("text/plain")) {
-            ContentType contentType = new ContentType(mimePart.getContentType());
+    private void parseTextpart(MimePart part, String content, MessageContent msgContent) throws MessagingException {
+        if (part.isMimeType("text/plain")) {
+            ContentType contentType = new ContentType(part.getContentType());
             TextMessageBody textMsg = new TextMessageBody();
             textMsg.setContent(content);
             textMsg.setCharset(getCharset(contentType));
-            textMsg.setEncoding(mimePart.getEncoding());
+            textMsg.setEncoding(part.getEncoding());
             msgContent.setTextMessage(textMsg);
-        } else if (mimePart.isMimeType("text/html")) {
-            ContentType contentType = new ContentType(mimePart.getContentType());
+        } else if (part.isMimeType("text/html")) {
+            ContentType contentType = new ContentType(part.getContentType());
             HtmlMessageBody htmlMsg = new HtmlMessageBody();
             htmlMsg.setContent(content);
             htmlMsg.setCharset(getCharset(contentType));
-            htmlMsg.setEncoding(mimePart.getEncoding());
+            htmlMsg.setEncoding(part.getEncoding());
             msgContent.setHtmlMessage(htmlMsg);
         }
     }
@@ -180,34 +181,34 @@ public class DefaultMessageParser implements MessageParser {
      */
     private void parseMultipart(Multipart multipart, MessageContent msgContent)
             throws MessagingException, IOException {
-        MimePart mimePart = (MimePart) multipart.getParent();
-        if (mimePart.isMimeType("multipart/mixed")) {
+        MimePart part = (MimePart) multipart.getParent();
+        if (part.isMimeType("multipart/mixed")) {
             parseMultipartMixed(multipart, msgContent);
-        } else if (mimePart.isMimeType("multipart/alternative")) {
+        } else if (part.isMimeType("multipart/alternative")) {
             parseMultipartAlternative(multipart, msgContent);
-        } else if (mimePart.isMimeType("multipart/related")) {
+        } else if (part.isMimeType("multipart/related")) {
             parseMultipartRelated(multipart, msgContent);
         } else {
-            ContentType contentType = new ContentType(mimePart.getContentType());
-            throw new MessagingException("Unknown multipart: " + contentType.getBaseType());
+            ContentType ctype = new ContentType(part.getContentType());
+            throw new MessagingException("Not support this multipart: " + ctype.getBaseType());
         }
     }
 
     private void parseMultipartMixed(Multipart multipart, MessageContent msgContent)
             throws MessagingException, IOException {
         for (int i = 0; i < multipart.getCount(); i++) {
-            MimePart mimePart = (MimePart) multipart.getBodyPart(i);
-            String disp = mimePart.getDisposition();
+            MimePart part = (MimePart) multipart.getBodyPart(i);
+            String disp = part.getDisposition();
             if (disp != null && disp.equalsIgnoreCase(Part.ATTACHMENT)) { // attachment
-                msgContent.addAttachment(createAttachment(mimePart));
+                msgContent.addAttachment(createAttachment(part));
             } else {
-                Object content = mimePart.getContent();
+                Object content = part.getContent();
                 if (content instanceof Multipart) {
                     parseMultipart((Multipart) content, msgContent);
                 } else if (content instanceof String) {
-                    parseTextpart(mimePart, (String) content, msgContent);
+                    parseTextpart(part, (String) content, msgContent);
                 } else {
-                    msgContent.addAttachment(createAttachment(mimePart));
+                    msgContent.addAttachment(createAttachment(part));
                 }
             }
         }
@@ -216,15 +217,15 @@ public class DefaultMessageParser implements MessageParser {
     private void parseMultipartAlternative(Multipart multipart, MessageContent msgContent)
             throws MessagingException, IOException {
         for (int i = 0; i < multipart.getCount(); i++) {
-            MimePart mimePart = (MimePart) multipart.getBodyPart(i);
-            Object content = mimePart.getContent();
+            MimePart part = (MimePart) multipart.getBodyPart(i);
+            Object content = part.getContent();
             if (content instanceof Multipart) {
                 parseMultipart((Multipart) content, msgContent);
             } else if (content instanceof String) {
-                parseTextpart(mimePart, (String) content, msgContent);
+                parseTextpart(part, (String) content, msgContent);
             } else {
-                ContentType contentType = new ContentType(mimePart.getContentType());
-                throw new MessagingException("Unknown content-type at multipart/alternative: " + contentType.getBaseType());
+                ContentType ctype = new ContentType(part.getContentType());
+                throw new MessagingException("Unknown content-type at multipart/alternative: " + ctype.getBaseType());
             }
         }
     }
@@ -233,14 +234,14 @@ public class DefaultMessageParser implements MessageParser {
             throws MessagingException, IOException {
         List<Inline> inlines= new LinkedList<>();
         for (int i = 0; i < multipart.getCount(); i++) {
-            MimePart mimePart = (MimePart) multipart.getBodyPart(i);
-            Object content = mimePart.getContent();
+            MimePart part = (MimePart) multipart.getBodyPart(i);
+            Object content = part.getContent();
             if (content instanceof Multipart) {
                 parseMultipart((Multipart) content, msgContent);
             } else if (content instanceof String) {
-                parseTextpart(mimePart, (String) content, msgContent);
+                parseTextpart(part, (String) content, msgContent);
             } else { // inline
-                inlines.add(createInline(mimePart));
+                inlines.add(createInline(part));
             }
         }
         if (msgContent.getHtmlMessage() != null) {
@@ -248,27 +249,27 @@ public class DefaultMessageParser implements MessageParser {
         }
     }
 
-    private Attachment createAttachment(MimePart mimePart) throws MessagingException, IOException {
-        String encodedFileName = mimePart.getFileName();
+    private Attachment createAttachment(MimePart part) throws MessagingException, IOException {
+        String encodedFileName = part.getFileName();
         String decodedFileName = null;
         if (encodedFileName != null) {
             decodedFileName = MimeUtility.decodeText(encodedFileName);
         }
-        ContentType contentType = new ContentType(mimePart.getContentType());
-        Attachment attachment = new Attachment(mimePart.getInputStream());
+        ContentType contentType = new ContentType(part.getContentType());
+        Attachment attachment = new Attachment(part.getInputStream());
         attachment.setMimeType(contentType.getBaseType());
         attachment.setCharset(getCharset(contentType));
         attachment.setName(decodedFileName, getCharset(encodedFileName));
-        attachment.setEncoding(mimePart.getEncoding());
+        attachment.setEncoding(part.getEncoding());
         return attachment;
     }
 
-    private Inline createInline(MimePart mimePart) throws MessagingException, IOException {
-        ContentType contentType = new ContentType(mimePart.getContentType());
-        Inline inline = new Inline(mimePart.getInputStream());
+    private Inline createInline(MimePart part) throws MessagingException, IOException {
+        ContentType contentType = new ContentType(part.getContentType());
+        Inline inline = new Inline(part.getInputStream());
         inline.setMimeType(contentType.getBaseType());
-        inline.setId(mimePart.getContentID());
-        inline.setEncoding(mimePart.getEncoding());
+        inline.setId(part.getContentID());
+        inline.setEncoding(part.getEncoding());
         return inline;
     }
 }
