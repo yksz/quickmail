@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -46,41 +45,34 @@ public class DefaultMessageParser implements MessageParser {
         return mail;
     }
 
-    protected String parseFrom(Message msg) throws MessagingException {
+    protected InternetAddress parseFrom(Message msg) throws MessagingException {
         InternetAddress[] from = (InternetAddress[]) msg.getFrom();
-        return (from == null) ? null : from[0].getAddress();
+        if (from == null || from.length == 0) {
+            return null;
+        }
+        return from[0];
     }
 
-    protected String[] parseTo(Message msg) throws MessagingException {
+    protected InternetAddress[] parseTo(Message msg) throws MessagingException {
         return parseRecipients(msg, RecipientType.TO);
     }
 
-    protected String[] parseCc(Message msg) throws MessagingException {
+    protected InternetAddress[] parseCc(Message msg) throws MessagingException {
         return parseRecipients(msg, RecipientType.CC);
     }
 
-    protected String[] parseBcc(Message msg) throws MessagingException {
+    protected InternetAddress[] parseBcc(Message msg) throws MessagingException {
         return parseRecipients(msg, RecipientType.BCC);
     }
 
-    private String[] parseRecipients(Message msg, RecipientType type) throws MessagingException {
+    private InternetAddress[] parseRecipients(Message msg, RecipientType type) throws MessagingException {
         InternetAddress[] addrs = (InternetAddress[]) msg.getRecipients(type);
-        if (addrs == null) {
-            return new String[0];
-        }
-        return Stream.of(addrs)
-                .map(addr -> addr.getAddress())
-                .toArray(String[]::new);
+        return (addrs != null) ? addrs : new InternetAddress[0];
     }
 
-    protected String[] parseReplyTo(Message msg) throws MessagingException {
+    protected InternetAddress[] parseReplyTo(Message msg) throws MessagingException {
         InternetAddress[] addrs = (InternetAddress[]) msg.getReplyTo();
-        if (addrs == null) {
-            return new String[0];
-        }
-        return Stream.of(addrs)
-                .map(addr -> addr.getAddress())
-                .toArray(String[]::new);
+        return (addrs != null) ? addrs : new InternetAddress[0];
     }
 
     protected Date parseSentDate(Message msg) throws MessagingException {

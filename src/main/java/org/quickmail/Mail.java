@@ -42,6 +42,11 @@ public class Mail {
         return this;
     }
 
+    public Mail setFrom(InternetAddress address) {
+        this.fromAddr = address;
+        return this;
+    }
+
     public List<InternetAddress> getTo() {
         return toAddrs;
     }
@@ -61,14 +66,20 @@ public class Mail {
         return this;
     }
 
-    public Mail addTo(String... addresses) throws AddressException {
-        return addTo(Arrays.asList(addresses));
+    public Mail addTo(InternetAddress address) {
+        this.toAddrs.add(address);
+        return this;
     }
 
-    public Mail addTo(List<String> addresses) throws AddressException {
+    public Mail addTo(String... addresses) throws AddressException {
         for (String address : addresses) {
             addTo(address);
         }
+        return this;
+    }
+
+    public Mail addTo(InternetAddress... addresses) {
+        this.toAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
 
@@ -97,13 +108,14 @@ public class Mail {
     }
 
     public Mail addCc(String... addresses) throws AddressException {
-        return addCc(Arrays.asList(addresses));
-    }
-
-    public Mail addCc(List<String> addresses) throws AddressException {
         for (String address : addresses) {
             addCc(address);
         }
+        return this;
+    }
+
+    public Mail addCc(InternetAddress... addresses) throws AddressException {
+        this.ccAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
 
@@ -132,13 +144,14 @@ public class Mail {
     }
 
     public Mail addBcc(String... addresses) throws AddressException {
-        return addBcc(Arrays.asList(addresses));
-    }
-
-    public Mail addBcc(List<String> addresses) throws AddressException {
         for (String address : addresses) {
             addBcc(address);
         }
+        return this;
+    }
+
+    public Mail addBcc(InternetAddress... addresses) throws AddressException {
+        this.bccAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
 
@@ -167,13 +180,14 @@ public class Mail {
     }
 
     public Mail addReplyTo(String... addresses) throws AddressException {
-        return addReplyTo(Arrays.asList(addresses));
-    }
-
-    public Mail addReplyTo(List<String> addresses) throws AddressException {
         for (String address : addresses) {
             addReplyTo(address);
         }
+        return this;
+    }
+
+    public Mail addReplyTo(InternetAddress... addresses) throws AddressException {
+        this.replyToAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
 

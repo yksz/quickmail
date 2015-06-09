@@ -33,6 +33,10 @@ public class MessageContent {
         return attachments;
     }
 
+    public void addAttachment(Attachment attachment) {
+        this.attachments.add(attachment);
+    }
+
     public void addAttachment(Attachment... attachments) {
         addAttachment(Arrays.asList(attachments));
     }
