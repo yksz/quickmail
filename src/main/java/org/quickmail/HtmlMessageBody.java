@@ -4,11 +4,12 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class HtmlMessageBody {
     private static final String MIME_TYPE = "text/html";
     private static final String SUB_TYPE = "html";
-    private String content;
+    private final String content;
     private Charset charset;
     private String encoding;
     private final List<Inline> inlines = new LinkedList<>();
@@ -21,13 +22,12 @@ public class HtmlMessageBody {
         return SUB_TYPE;
     }
 
-    public String getContent() {
-        return content;
+    public HtmlMessageBody(String content) {
+        this.content = Objects.requireNonNull(content, "content must not be null");
     }
 
-    public HtmlMessageBody setContent(String content) {
-        this.content = content;
-        return this;
+    public String getContent() {
+        return content;
     }
 
     public Charset getCharset() {

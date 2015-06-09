@@ -1,11 +1,12 @@
 package org.quickmail;
 
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 public class TextMessageBody {
     private static final String MIME_TYPE = "text/plain";
     private static final String SUB_TYPE = "plain";
-    private String content;
+    private final String content;
     private Charset charset;
     private String encoding;
 
@@ -17,13 +18,12 @@ public class TextMessageBody {
         return SUB_TYPE;
     }
 
-    public String getContent() {
-        return content;
+    public TextMessageBody(String content) {
+        this.content = Objects.requireNonNull(content, "content must not be null");
     }
 
-    public TextMessageBody setContent(String content) {
-        this.content = content;
-        return this;
+    public String getContent() {
+        return content;
     }
 
     public Charset getCharset() {

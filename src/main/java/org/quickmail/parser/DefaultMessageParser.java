@@ -139,15 +139,13 @@ public class DefaultMessageParser implements MessageParser {
     private void parseTextpart(MimePart part, String content, MessageContent msgContent) throws MessagingException {
         if (part.isMimeType("text/plain")) {
             ContentType contentType = new ContentType(part.getContentType());
-            TextMessageBody textMsg = new TextMessageBody();
-            textMsg.setContent(content);
+            TextMessageBody textMsg = new TextMessageBody(content);
             textMsg.setCharset(getCharset(contentType));
             textMsg.setEncoding(part.getEncoding());
             msgContent.setTextMessage(textMsg);
         } else if (part.isMimeType("text/html")) {
             ContentType contentType = new ContentType(part.getContentType());
-            HtmlMessageBody htmlMsg = new HtmlMessageBody();
-            htmlMsg.setContent(content);
+            HtmlMessageBody htmlMsg = new HtmlMessageBody(content);
             htmlMsg.setCharset(getCharset(contentType));
             htmlMsg.setEncoding(part.getEncoding());
             msgContent.setHtmlMessage(htmlMsg);
