@@ -3,21 +3,17 @@ package org.quickmail.transport;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -41,38 +37,20 @@ class MessageComposer {
 
     public Message compose(Mail mail) throws MessagingException, IOException {
         Objects.requireNonNull(mail, "mail must not be null");
-        if (mail.getFrom() != null) {
-            msg.setFrom(new InternetAddress(mail.getFrom()));
-        }
-        if (mail.getTo() != null) {
-            msg.setRecipients(RecipientType.TO, convertToAddresses(mail.getTo()));
-        }
-        if (mail.getCc() != null) {
-            msg.setRecipients(RecipientType.CC, convertToAddresses(mail.getCc()));
-        }
-        if (mail.getBcc() != null) {
-            msg.setRecipients(RecipientType.BCC, convertToAddresses(mail.getBcc()));
-        }
-        if (mail.getReplyTo() != null) {
-            msg.setReplyTo(convertToAddresses(mail.getReplyTo()));
-        }
-        msg.setSentDate((mail.getSentDate() != null) ? mail.getSentDate() : new Date());
+        msg.setFrom(mail.getFrom());
+        msg.setRecipients(RecipientType.TO, toArray(mail.getTo()));
+        msg.setRecipients(RecipientType.CC, toArray(mail.getCc()));
+        msg.setRecipients(RecipientType.BCC, toArray(mail.getBcc()));
+        msg.setReplyTo(toArray(mail.getReplyTo()));
+        msg.setSentDate(mail.getSentDate());
         msg.setSubject(mail.getSubject(), mail.getSubjectCharset().name());
         setMessageContent(mail);
         return msg;
     }
 
-    private Address[] convertToAddresses(List<String> strs) throws AddressException {
-        return strs.stream()
-                .map(str -> {
-                    try {
-                        return new InternetAddress(str);
-                    } catch (AddressException e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toArray(Address[]::new);
+    @SuppressWarnings("unchecked")
+    private <T> T[] toArray(List<T> list) {
+        return (T[]) list.toArray();
     }
 
     private void setMessageContent(Mail mail) throws MessagingException, IOException {

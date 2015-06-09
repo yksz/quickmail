@@ -1,17 +1,21 @@
 package org.quickmail;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 public class Mail {
-    private String fromAddr;
-    private final List<String> toAddrs = new LinkedList<>();
-    private final List<String> ccAddrs = new LinkedList<>();
-    private final List<String> bccAddrs = new LinkedList<>();
-    private final List<String> replyToAddrs = new LinkedList<>();
+    private InternetAddress fromAddr;
+    private final List<InternetAddress> toAddrs = new LinkedList<>();
+    private final List<InternetAddress> ccAddrs = new LinkedList<>();
+    private final List<InternetAddress> bccAddrs = new LinkedList<>();
+    private final List<InternetAddress> replyToAddrs = new LinkedList<>();
     private Date sentDate;
     private String subject;
     private Charset subjectCharset;
@@ -19,84 +23,162 @@ public class Mail {
     private HtmlBody htmlBody;
     private final List<Attachment> attachments = new LinkedList<>();
 
-    public String getFrom() {
+    public InternetAddress getFrom() {
         return fromAddr;
     }
 
-    public Mail setFrom(String address) {
-        this.fromAddr = address;
+    public Mail setFrom(String address) throws AddressException {
+        this.fromAddr = new InternetAddress(address);
         return this;
     }
 
-    public List<String> getTo() {
+    public Mail setFrom(String address, String personal) throws AddressException, UnsupportedEncodingException {
+        this.fromAddr = new InternetAddress(address, personal);
+        return this;
+    }
+
+    public Mail setFrom(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
+        this.fromAddr = new InternetAddress(address, personal, charset);
+        return this;
+    }
+
+    public List<InternetAddress> getTo() {
         return toAddrs;
     }
 
-    public Mail addTo(String... addresses) {
+    public Mail addTo(String address) throws AddressException {
+        this.toAddrs.add(new InternetAddress(address));
+        return this;
+    }
+
+    public Mail addTo(String address, String personal) throws AddressException, UnsupportedEncodingException {
+        this.toAddrs.add(new InternetAddress(address, personal));
+        return this;
+    }
+
+    public Mail addTo(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
+        this.toAddrs.add(new InternetAddress(address, personal, charset));
+        return this;
+    }
+
+    public Mail addTo(String... addresses) throws AddressException {
         return addTo(Arrays.asList(addresses));
     }
 
-    public Mail addTo(List<String> addresses) {
-        this.toAddrs.addAll(addresses);
+    public Mail addTo(List<String> addresses) throws AddressException {
+        for (String address : addresses) {
+            addTo(address);
+        }
         return this;
     }
 
     public Mail clearTo() {
-        toAddrs.clear();
+        this.toAddrs.clear();
         return this;
     }
 
-    public List<String> getCc() {
+    public List<InternetAddress> getCc() {
         return ccAddrs;
     }
 
-    public Mail addCc(String... addresses) {
+    public Mail addCc(String address) throws AddressException {
+        this.ccAddrs.add(new InternetAddress(address));
+        return this;
+    }
+
+    public Mail addCc(String address, String personal) throws AddressException, UnsupportedEncodingException {
+        this.ccAddrs.add(new InternetAddress(address, personal));
+        return this;
+    }
+
+    public Mail addCc(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
+        this.ccAddrs.add(new InternetAddress(address, personal, charset));
+        return this;
+    }
+
+    public Mail addCc(String... addresses) throws AddressException {
         return addCc(Arrays.asList(addresses));
     }
 
-    public Mail addCc(List<String> addresses) {
-        this.ccAddrs.addAll(addresses);
+    public Mail addCc(List<String> addresses) throws AddressException {
+        for (String address : addresses) {
+            addCc(address);
+        }
         return this;
     }
 
     public Mail clearCc() {
-        ccAddrs.clear();
+        this.ccAddrs.clear();
         return this;
     }
 
-    public List<String> getBcc() {
+    public List<InternetAddress> getBcc() {
         return bccAddrs;
     }
 
-    public Mail addBcc(String... addresses) {
+    public Mail addBcc(String address) throws AddressException {
+        this.bccAddrs.add(new InternetAddress(address));
+        return this;
+    }
+
+    public Mail addBcc(String address, String personal) throws AddressException, UnsupportedEncodingException {
+        this.bccAddrs.add(new InternetAddress(address, personal));
+        return this;
+    }
+
+    public Mail addBcc(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
+        this.bccAddrs.add(new InternetAddress(address, personal, charset));
+        return this;
+    }
+
+    public Mail addBcc(String... addresses) throws AddressException {
         return addBcc(Arrays.asList(addresses));
     }
 
-    public Mail addBcc(List<String> addresses) {
-        this.bccAddrs.addAll(addresses);
+    public Mail addBcc(List<String> addresses) throws AddressException {
+        for (String address : addresses) {
+            addBcc(address);
+        }
         return this;
     }
 
     public Mail clearBcc() {
-        bccAddrs.clear();
+        this.bccAddrs.clear();
         return this;
     }
 
-    public List<String> getReplyTo() {
+    public List<InternetAddress> getReplyTo() {
         return replyToAddrs;
     }
 
-    public Mail addReplyTo(String... addresses) {
+    public Mail addReplyTo(String address) throws AddressException {
+        this.replyToAddrs.add(new InternetAddress(address));
+        return this;
+    }
+
+    public Mail addReplyTo(String address, String personal) throws AddressException, UnsupportedEncodingException {
+        this.replyToAddrs.add(new InternetAddress(address, personal));
+        return this;
+    }
+
+    public Mail addReplyTo(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
+        this.replyToAddrs.add(new InternetAddress(address, personal, charset));
+        return this;
+    }
+
+    public Mail addReplyTo(String... addresses) throws AddressException {
         return addReplyTo(Arrays.asList(addresses));
     }
 
-    public Mail addReplyTo(List<String> addresses) {
-        this.replyToAddrs.addAll(addresses);
+    public Mail addReplyTo(List<String> addresses) throws AddressException {
+        for (String address : addresses) {
+            addReplyTo(address);
+        }
         return this;
     }
 
     public Mail clearReplyTo() {
-        replyToAddrs.clear();
+        this.replyToAddrs.clear();
         return this;
     }
 
@@ -155,12 +237,22 @@ public class Mail {
         return attachments;
     }
 
+    public Mail addAttachment(Attachment attachment) {
+        this.attachments.add(attachment);
+        return this;
+    }
+
     public Mail addAttachment(Attachment... attachments) {
         return addAttachment(Arrays.asList(attachments));
     }
 
     public Mail addAttachment(List<Attachment> attachments) {
         this.attachments.addAll(attachments);
+        return this;
+    }
+
+    public Mail clearAttachment() {
+        this.attachments.clear();
         return this;
     }
 

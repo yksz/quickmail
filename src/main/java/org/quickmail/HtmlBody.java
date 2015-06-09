@@ -52,12 +52,22 @@ public class HtmlBody {
         return inlines;
     }
 
+    public HtmlBody addInline(Inline inline) {
+        this.inlines.add(inline);
+        return this;
+    }
+
     public HtmlBody addInline(Inline... inlines) {
         return addInline(Arrays.asList(inlines));
     }
 
     public HtmlBody addInline(List<Inline> inlines) {
         this.inlines.addAll(inlines);
+        return this;
+    }
+
+    public HtmlBody clearInline() {
+        this.inlines.clear();
         return this;
     }
 
