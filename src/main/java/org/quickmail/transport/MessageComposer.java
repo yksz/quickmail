@@ -28,6 +28,8 @@ import org.quickmail.TextBody;
 
 class MessageComposer {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
+    private static final String DEFAULT_ATTACHMENT_ENCODING = "base64";
+    private static final String DEFAULT_INLINE_ENCODING = "base64";
 
     private MimeMessage msg;
 
@@ -177,9 +179,8 @@ class MessageComposer {
             bodyPart.setDataHandler(new DataHandler(dataSource));
             setContentType(bodyPart, mimeType, mimeCharset);
         }
-        if (attachment.getEncoding() != null) {
-            bodyPart.setHeader("Content-Transfer-Encoding", attachment.getEncoding());
-        }
+        String encoding = (attachment.getEncoding() != null) ? attachment.getEncoding() : DEFAULT_ATTACHMENT_ENCODING;
+        bodyPart.setHeader("Content-Transfer-Encoding", encoding);
         try {
             String filename = MimeUtility.encodeWord(attachment.getName(), mimeCharset, "B");
             bodyPart.setFileName(filename);
@@ -203,9 +204,8 @@ class MessageComposer {
         if (inline.getId() != null) {
             bodyPart.setHeader("Content-Id", inline.getId());
         }
-        if (inline.getEncoding() != null) {
-            bodyPart.setHeader("Content-Transfer-Encoding", inline.getEncoding());
-        }
+        String encoding = (inline.getEncoding() != null) ? inline.getEncoding() : DEFAULT_INLINE_ENCODING;
+        bodyPart.setHeader("Content-Transfer-Encoding", encoding);
         return bodyPart;
     }
 
