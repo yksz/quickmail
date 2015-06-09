@@ -3,6 +3,8 @@ package org.quickmail.parser;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +21,10 @@ import javax.mail.internet.MimePart;
 import javax.mail.internet.MimeUtility;
 
 import org.quickmail.Attachment;
+import org.quickmail.HtmlMessageBody;
 import org.quickmail.Inline;
 import org.quickmail.Mail;
+import org.quickmail.TextMessageBody;
 
 public class DefaultMessageParser implements MessageParser {
     @Override
@@ -95,6 +99,12 @@ public class DefaultMessageParser implements MessageParser {
         return getCharset(subject[0]);
     }
 
+    /**
+     * Get charset from "=?charset?encoding?encoded-text?="
+     *
+     * @param encodedWord
+     * @return
+     */
     private Charset getCharset(String encodedWord) {
         if (encodedWord == null) {
             return null;
@@ -128,14 +138,18 @@ public class DefaultMessageParser implements MessageParser {
     private void parseTextpart(MimePart mimePart, String content, MessageContent msgContent) throws MessagingException {
         if (mimePart.isMimeType("text/plain")) {
             ContentType contentType = new ContentType(mimePart.getContentType());
-            msgContent.getTextMessage().setContent(content);
-            msgContent.getTextMessage().setCharset(getCharset(contentType));
-            msgContent.getTextMessage().setEncoding(mimePart.getEncoding());
+            TextMessageBody textMsg = new TextMessageBody();
+            textMsg.setContent(content);
+            textMsg.setCharset(getCharset(contentType));
+            textMsg.setEncoding(mimePart.getEncoding());
+            msgContent.setTextMessage(textMsg);
         } else if (mimePart.isMimeType("text/html")) {
             ContentType contentType = new ContentType(mimePart.getContentType());
-            msgContent.getHtmlMessage().setContent(content);
-            msgContent.getHtmlMessage().setCharset(getCharset(contentType));
-            msgContent.getHtmlMessage().setEncoding(mimePart.getEncoding());
+            HtmlMessageBody htmlMsg = new HtmlMessageBody();
+            htmlMsg.setContent(content);
+            htmlMsg.setCharset(getCharset(contentType));
+            htmlMsg.setEncoding(mimePart.getEncoding());
+            msgContent.setHtmlMessage(htmlMsg);
         }
     }
 
@@ -185,7 +199,7 @@ public class DefaultMessageParser implements MessageParser {
             MimePart mimePart = (MimePart) multipart.getBodyPart(i);
             String disp = mimePart.getDisposition();
             if (disp != null && disp.equalsIgnoreCase(Part.ATTACHMENT)) { // attachment
-                msgContent.getAttachments().add(createAttachment(mimePart));
+                msgContent.addAttachment(createAttachment(mimePart));
             } else {
                 Object content = mimePart.getContent();
                 if (content instanceof Multipart) {
@@ -193,7 +207,7 @@ public class DefaultMessageParser implements MessageParser {
                 } else if (content instanceof String) {
                     parseTextpart(mimePart, (String) content, msgContent);
                 } else {
-                    msgContent.getAttachments().add(createAttachment(mimePart));
+                    msgContent.addAttachment(createAttachment(mimePart));
                 }
             }
         }
@@ -217,6 +231,7 @@ public class DefaultMessageParser implements MessageParser {
 
     private void parseMultipartRelated(Multipart multipart, MessageContent msgContent)
             throws MessagingException, IOException {
+        List<Inline> inlines= new LinkedList<>();
         for (int i = 0; i < multipart.getCount(); i++) {
             MimePart mimePart = (MimePart) multipart.getBodyPart(i);
             Object content = mimePart.getContent();
@@ -225,8 +240,11 @@ public class DefaultMessageParser implements MessageParser {
             } else if (content instanceof String) {
                 parseTextpart(mimePart, (String) content, msgContent);
             } else { // inline
-                msgContent.getHtmlMessage().addInline(createInline(mimePart));
+                inlines.add(createInline(mimePart));
             }
+        }
+        if (msgContent.getHtmlMessage() != null) {
+            msgContent.getHtmlMessage().addInline(inlines);
         }
     }
 
