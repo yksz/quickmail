@@ -36,45 +36,51 @@ public class Attachment {
         return mimeType;
     }
 
-    public void setMimeType(String mimeType) {
+    public Attachment setMimeType(String mimeType) {
         this.mimeType = mimeType;
+        return this;
     }
 
     public Charset getCharset() {
         return charset;
     }
 
-    public void setCharset(Charset charset) {
+    public Attachment setCharset(Charset charset) {
         this.charset = charset;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Attachment setName(String name) {
         this.name = name;
+        return this;
     }
 
-    public void setName(String name, Charset charset) {
+    public Attachment setName(String name, Charset charset) {
         this.name = name;
         this.nameCharset = charset;
+        return this;
     }
 
     public Charset getNameCharset() {
         return nameCharset;
     }
 
-    public void setNameCharset(Charset nameCharset) {
+    public Attachment setNameCharset(Charset nameCharset) {
         this.nameCharset = nameCharset;
+        return this;
     }
 
     public String getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(String encoding) {
+    public Attachment setEncoding(String encoding) {
         this.encoding = encoding;
+        return this;
     }
 
     @Override

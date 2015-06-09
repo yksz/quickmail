@@ -33,37 +33,42 @@ public class Inline {
         return mimeType;
     }
 
-    public void setMimeType(String mimeType) {
+    public Inline setMimeType(String mimeType) {
         this.mimeType = mimeType;
+        return this;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public Inline setId(String id) {
         this.id = id;
+        return this;
     }
 
     public String getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(String encoding) {
+    public Inline setEncoding(String encoding) {
         this.encoding = encoding;
+        return this;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Inline [mimeType=");
+        builder.append("Inline [file=");
+        builder.append(file);
+        builder.append(", inputStream=");
+        builder.append(inputStream);
+        builder.append(", mimeType=");
         builder.append(mimeType);
         builder.append(", id=");
         builder.append(id);
         builder.append(", encoding=");
         builder.append(encoding);
-        builder.append(", inputStream=");
-        builder.append(inputStream);
         builder.append("]");
         return builder.toString();
     }

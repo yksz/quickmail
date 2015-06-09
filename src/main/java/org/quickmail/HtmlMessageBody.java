@@ -25,36 +25,40 @@ public class HtmlMessageBody {
         return content;
     }
 
-    public void setContent(String content) {
+    public HtmlMessageBody setContent(String content) {
         this.content = content;
+        return this;
     }
 
     public Charset getCharset() {
         return charset;
     }
 
-    public void setCharset(Charset charset) {
+    public HtmlMessageBody setCharset(Charset charset) {
         this.charset = charset;
+        return this;
     }
 
     public String getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(String encoding) {
+    public HtmlMessageBody setEncoding(String encoding) {
         this.encoding = encoding;
+        return this;
     }
 
     public List<Inline> getInlines() {
         return inlines;
     }
 
-    public void addInline(Inline... inlines) {
-        addInline(Arrays.asList(inlines));
+    public HtmlMessageBody addInline(Inline... inlines) {
+        return addInline(Arrays.asList(inlines));
     }
 
-    public void addInline(List<Inline> inlines) {
+    public HtmlMessageBody addInline(List<Inline> inlines) {
         this.inlines.addAll(inlines);
+        return this;
     }
 
     public boolean hasInline() {

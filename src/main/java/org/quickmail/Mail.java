@@ -23,117 +23,145 @@ public class Mail {
         return fromAddr;
     }
 
-    public void setFrom(String address) {
+    public Mail setFrom(String address) {
         this.fromAddr = address;
+        return this;
     }
 
     public List<String> getTo() {
         return toAddrs;
     }
 
-    public void addTo(String... addresses) {
-        addTo(Arrays.asList(addresses));
+    public Mail addTo(String... addresses) {
+        return addTo(Arrays.asList(addresses));
     }
 
-    public void addTo(List<String> addresses) {
+    public Mail addTo(List<String> addresses) {
         this.toAddrs.addAll(addresses);
+        return this;
     }
 
-    public void clearTo() {
+    public Mail clearTo() {
         toAddrs.clear();
+        return this;
     }
 
     public List<String> getCc() {
         return ccAddrs;
     }
 
-    public void addCc(String... addresses) {
-        addCc(Arrays.asList(addresses));
+    public Mail addCc(String... addresses) {
+        return addCc(Arrays.asList(addresses));
     }
 
-    public void addCc(List<String> addresses) {
+    public Mail addCc(List<String> addresses) {
         this.ccAddrs.addAll(addresses);
+        return this;
+    }
+
+    public Mail clearCc() {
+        ccAddrs.clear();
+        return this;
     }
 
     public List<String> getBcc() {
         return bccAddrs;
     }
 
-    public void addBcc(String... addresses) {
-        addBcc(Arrays.asList(addresses));
+    public Mail addBcc(String... addresses) {
+        return addBcc(Arrays.asList(addresses));
     }
 
-    public void addBcc(List<String> addresses) {
+    public Mail addBcc(List<String> addresses) {
         this.bccAddrs.addAll(addresses);
+        return this;
+    }
+
+    public Mail clearBcc() {
+        bccAddrs.clear();
+        return this;
     }
 
     public List<String> getReplyTo() {
         return replyToAddrs;
     }
 
-    public void addReplyTo(String... addresses) {
-        addReplyTo(Arrays.asList(addresses));
+    public Mail addReplyTo(String... addresses) {
+        return addReplyTo(Arrays.asList(addresses));
     }
 
-    public void addReplyTo(List<String> addresses) {
+    public Mail addReplyTo(List<String> addresses) {
         this.replyToAddrs.addAll(addresses);
+        return this;
+    }
+
+    public Mail clearReplyTo() {
+        replyToAddrs.clear();
+        return this;
     }
 
     public Date getSentDate() {
         return sentDate;
     }
 
-    public void setSentDate(Date sentDate) {
+    public Mail setSentDate(Date sentDate) {
         this.sentDate = sentDate;
+        return this;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public Mail setSubject(String subject) {
         this.subject = subject;
+        return this;
     }
 
-    public void setSubject(String subject, Charset charset) {
+    public Mail setSubject(String subject, Charset charset) {
         this.subject = subject;
         this.subjectCharset = charset;
+        return this;
     }
 
     public Charset getSubjectCharset() {
         return subjectCharset;
     }
 
-    public void setSubjectCharset(Charset subjectCharset) {
+    public Mail setSubjectCharset(Charset subjectCharset) {
         this.subjectCharset = subjectCharset;
+        return this;
     }
 
     public TextMessageBody getTextMessage() {
         return textMsg;
     }
 
-    public void setTextMessage(TextMessageBody message) {
+    public Mail setTextMessage(TextMessageBody message) {
         this.textMsg = message;
+        return this;
     }
 
     public HtmlMessageBody getHtmlMessage() {
         return htmlMsg;
     }
 
-    public void setHtmlMessage(HtmlMessageBody message) {
+    public Mail setHtmlMessage(HtmlMessageBody message) {
         this.htmlMsg = message;
+        return this;
     }
 
     public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void addAttachment(Attachment... attachments) {
-        addAttachment(Arrays.asList(attachments));
+    public Mail addAttachment(Attachment... attachments) {
+        return addAttachment(Arrays.asList(attachments));
     }
 
-    public void addAttachment(List<Attachment> attachments) {
+    public Mail addAttachment(List<Attachment> attachments) {
         this.attachments.addAll(attachments);
+        return this;
     }
 
     public boolean hasTextMessage() {

@@ -21,24 +21,27 @@ public class TextMessageBody {
         return content;
     }
 
-    public void setContent(String content) {
+    public TextMessageBody setContent(String content) {
         this.content = content;
+        return this;
     }
 
     public Charset getCharset() {
         return charset;
     }
 
-    public void setCharset(Charset charset) {
+    public TextMessageBody setCharset(Charset charset) {
         this.charset = charset;
+        return this;
     }
 
     public String getEncoding() {
         return encoding;
     }
 
-    public void setEncoding(String encoding) {
+    public TextMessageBody setEncoding(String encoding) {
         this.encoding = encoding;
+        return this;
     }
 
     @Override
