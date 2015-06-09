@@ -5,28 +5,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.quickmail.Attachment;
-import org.quickmail.HtmlMessageBody;
-import org.quickmail.TextMessageBody;
+import org.quickmail.HtmlBody;
+import org.quickmail.TextBody;
 
 public class MessageContent {
-    private TextMessageBody textMessage;
-    private HtmlMessageBody htmlMessage;
+    private TextBody textBody;
+    private HtmlBody htmlBody;
     private List<Attachment> attachments = new LinkedList<>();
 
-    public TextMessageBody getTextMessage() {
-        return textMessage;
+    public TextBody getTextBody() {
+        return textBody;
     }
 
-    public void setTextMessage(TextMessageBody textMessage) {
-        this.textMessage = textMessage;
+    public void setTextBody(TextBody textBody) {
+        this.textBody = textBody;
     }
 
-    public HtmlMessageBody getHtmlMessage() {
-        return htmlMessage;
+    public HtmlBody getHtmlBody() {
+        return htmlBody;
     }
 
-    public void setHtmlMessage(HtmlMessageBody htmlMessage) {
-        this.htmlMessage = htmlMessage;
+    public void setHtmlBody(HtmlBody htmlBody) {
+        this.htmlBody = htmlBody;
     }
 
     public List<Attachment> getAttachments() {

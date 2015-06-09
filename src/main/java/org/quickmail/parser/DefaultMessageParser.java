@@ -21,28 +21,28 @@ import javax.mail.internet.MimePart;
 import javax.mail.internet.MimeUtility;
 
 import org.quickmail.Attachment;
-import org.quickmail.HtmlMessageBody;
+import org.quickmail.HtmlBody;
 import org.quickmail.Inline;
 import org.quickmail.Mail;
-import org.quickmail.TextMessageBody;
+import org.quickmail.TextBody;
 
 public class DefaultMessageParser implements MessageParser {
     @Override
-    public Mail parse(Message message) throws MessagingException {
-        Objects.requireNonNull(message, "message must not be null");
+    public Mail parse(Message msg) throws MessagingException {
+        Objects.requireNonNull(msg, "msg must not be null");
         Mail mail = new Mail();
-        mail.setFrom(parseFrom(message));
-        mail.addTo(parseTo(message));
-        mail.addCc(parseCc(message));
-        mail.addBcc(parseBcc(message));
-        mail.addReplyTo(parseReplyTo(message));
-        mail.setSentDate(parseSentDate(message));
-        mail.setSubject(parseSubject(message));
-        mail.setSubjectCharset(parseSubjectCharset(message));
-        MessageContent messageContent = parseMessageContent(message);
-        mail.setTextMessage(messageContent.getTextMessage());
-        mail.setHtmlMessage(messageContent.getHtmlMessage());
-        mail.addAttachment(messageContent.getAttachments());
+        mail.setFrom(parseFrom(msg));
+        mail.addTo(parseTo(msg));
+        mail.addCc(parseCc(msg));
+        mail.addBcc(parseBcc(msg));
+        mail.addReplyTo(parseReplyTo(msg));
+        mail.setSentDate(parseSentDate(msg));
+        mail.setSubject(parseSubject(msg));
+        mail.setSubjectCharset(parseSubjectCharset(msg));
+        MessageContent msgContent = parseMessageContent(msg);
+        mail.setTextBody(msgContent.getTextBody());
+        mail.setHtmlBody(msgContent.getHtmlBody());
+        mail.addAttachment(msgContent.getAttachments());
         return mail;
     }
 
@@ -139,16 +139,16 @@ public class DefaultMessageParser implements MessageParser {
     private void parseTextpart(MimePart part, String content, MessageContent msgContent) throws MessagingException {
         if (part.isMimeType("text/plain")) {
             ContentType contentType = new ContentType(part.getContentType());
-            TextMessageBody textMsg = new TextMessageBody(content);
-            textMsg.setCharset(getCharset(contentType));
-            textMsg.setEncoding(part.getEncoding());
-            msgContent.setTextMessage(textMsg);
+            TextBody textBody = new TextBody(content);
+            textBody.setCharset(getCharset(contentType));
+            textBody.setEncoding(part.getEncoding());
+            msgContent.setTextBody(textBody);
         } else if (part.isMimeType("text/html")) {
             ContentType contentType = new ContentType(part.getContentType());
-            HtmlMessageBody htmlMsg = new HtmlMessageBody(content);
-            htmlMsg.setCharset(getCharset(contentType));
-            htmlMsg.setEncoding(part.getEncoding());
-            msgContent.setHtmlMessage(htmlMsg);
+            HtmlBody htmlBody = new HtmlBody(content);
+            htmlBody.setCharset(getCharset(contentType));
+            htmlBody.setEncoding(part.getEncoding());
+            msgContent.setHtmlBody(htmlBody);
         }
     }
 
@@ -242,8 +242,8 @@ public class DefaultMessageParser implements MessageParser {
                 inlines.add(createInline(part));
             }
         }
-        if (msgContent.getHtmlMessage() != null) {
-            msgContent.getHtmlMessage().addInline(inlines);
+        if (msgContent.getHtmlBody() != null) {
+            msgContent.getHtmlBody().addInline(inlines);
         }
     }
 

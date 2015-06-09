@@ -15,8 +15,8 @@ public class Mail {
     private Date sentDate;
     private String subject;
     private Charset subjectCharset;
-    private TextMessageBody textMsg;
-    private HtmlMessageBody htmlMsg;
+    private TextBody textBody;
+    private HtmlBody htmlBody;
     private final List<Attachment> attachments = new LinkedList<>();
 
     public String getFrom() {
@@ -133,21 +133,21 @@ public class Mail {
         return this;
     }
 
-    public TextMessageBody getTextMessage() {
-        return textMsg;
+    public TextBody getTextBody() {
+        return textBody;
     }
 
-    public Mail setTextMessage(TextMessageBody message) {
-        this.textMsg = message;
+    public Mail setTextBody(TextBody message) {
+        this.textBody = message;
         return this;
     }
 
-    public HtmlMessageBody getHtmlMessage() {
-        return htmlMsg;
+    public HtmlBody getHtmlBody() {
+        return htmlBody;
     }
 
-    public Mail setHtmlMessage(HtmlMessageBody message) {
-        this.htmlMsg = message;
+    public Mail setHtmlBody(HtmlBody message) {
+        this.htmlBody = message;
         return this;
     }
 
@@ -165,11 +165,11 @@ public class Mail {
     }
 
     public boolean hasTextMessage() {
-        return textMsg != null;
+        return textBody != null;
     }
 
     public boolean hasHtmlMessage() {
-        return htmlMsg != null;
+        return htmlBody != null;
     }
 
     public boolean hasAttachment() {
@@ -193,10 +193,12 @@ public class Mail {
         builder.append(sentDate);
         builder.append(", subject=");
         builder.append(subject);
-        builder.append(", textMessage=");
-        builder.append(textMsg);
-        builder.append(", htmlMessage=");
-        builder.append(htmlMsg);
+        builder.append(", subjectCharset=");
+        builder.append(subjectCharset);
+        builder.append(", textBody=");
+        builder.append(textBody);
+        builder.append(", htmlBody=");
+        builder.append(htmlBody);
         builder.append(", attachments=");
         builder.append(attachments);
         builder.append("]");

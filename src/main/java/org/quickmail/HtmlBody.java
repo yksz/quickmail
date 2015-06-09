@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class HtmlMessageBody {
+public class HtmlBody {
     private static final String MIME_TYPE = "text/html";
     private static final String SUB_TYPE = "html";
     private final String content;
@@ -22,7 +22,7 @@ public class HtmlMessageBody {
         return SUB_TYPE;
     }
 
-    public HtmlMessageBody(String content) {
+    public HtmlBody(String content) {
         this.content = Objects.requireNonNull(content, "content must not be null");
     }
 
@@ -34,7 +34,7 @@ public class HtmlMessageBody {
         return charset;
     }
 
-    public HtmlMessageBody setCharset(Charset charset) {
+    public HtmlBody setCharset(Charset charset) {
         this.charset = charset;
         return this;
     }
@@ -43,7 +43,7 @@ public class HtmlMessageBody {
         return encoding;
     }
 
-    public HtmlMessageBody setEncoding(String encoding) {
+    public HtmlBody setEncoding(String encoding) {
         this.encoding = encoding;
         return this;
     }
@@ -52,11 +52,11 @@ public class HtmlMessageBody {
         return inlines;
     }
 
-    public HtmlMessageBody addInline(Inline... inlines) {
+    public HtmlBody addInline(Inline... inlines) {
         return addInline(Arrays.asList(inlines));
     }
 
-    public HtmlMessageBody addInline(List<Inline> inlines) {
+    public HtmlBody addInline(List<Inline> inlines) {
         this.inlines.addAll(inlines);
         return this;
     }
@@ -68,7 +68,7 @@ public class HtmlMessageBody {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("HtmlMessageBody [content=");
+        builder.append("HtmlBody [content=");
         builder.append(content);
         builder.append(", charset=");
         builder.append(charset);

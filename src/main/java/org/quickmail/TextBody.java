@@ -3,7 +3,7 @@ package org.quickmail;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
-public class TextMessageBody {
+public class TextBody {
     private static final String MIME_TYPE = "text/plain";
     private static final String SUB_TYPE = "plain";
     private final String content;
@@ -18,7 +18,7 @@ public class TextMessageBody {
         return SUB_TYPE;
     }
 
-    public TextMessageBody(String content) {
+    public TextBody(String content) {
         this.content = Objects.requireNonNull(content, "content must not be null");
     }
 
@@ -30,7 +30,7 @@ public class TextMessageBody {
         return charset;
     }
 
-    public TextMessageBody setCharset(Charset charset) {
+    public TextBody setCharset(Charset charset) {
         this.charset = charset;
         return this;
     }
@@ -39,7 +39,7 @@ public class TextMessageBody {
         return encoding;
     }
 
-    public TextMessageBody setEncoding(String encoding) {
+    public TextBody setEncoding(String encoding) {
         this.encoding = encoding;
         return this;
     }
@@ -47,7 +47,7 @@ public class TextMessageBody {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("TextMessageBody [content=");
+        builder.append("TextBody [content=");
         builder.append(content);
         builder.append(", charset=");
         builder.append(charset);

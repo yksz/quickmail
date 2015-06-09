@@ -25,10 +25,10 @@ import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.quickmail.Attachment;
-import org.quickmail.HtmlMessageBody;
+import org.quickmail.HtmlBody;
 import org.quickmail.Inline;
 import org.quickmail.Mail;
-import org.quickmail.TextMessageBody;
+import org.quickmail.TextBody;
 
 class MessageComposer {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
@@ -80,26 +80,26 @@ class MessageComposer {
             msg.setContent(composeMultipartMixed(mail));
         } else if (mail.hasTextMessage() && mail.hasHtmlMessage()) {
             msg.setContent(composeMultipartAlternative(mail));
-        } else if (mail.hasHtmlMessage() && mail.getHtmlMessage().hasInline()){
+        } else if (mail.hasHtmlMessage() && mail.getHtmlBody().hasInline()){
             msg.setContent(composeMultipartRelated(mail));
         } else if (mail.hasTextMessage()) {
-            TextMessageBody textMsg = mail.getTextMessage();
-            msg.setText(textMsg.getContent(), getMimeCharset(textMsg.getCharset()), TextMessageBody.getSubType());
-            if (textMsg.getEncoding() != null) {
-                msg.setHeader("Content-Transfer-Encoding", textMsg.getEncoding());
+            TextBody textBody = mail.getTextBody();
+            msg.setText(textBody.getContent(), mimeCharset(textBody.getCharset()), TextBody.getSubType());
+            if (textBody.getEncoding() != null) {
+                msg.setHeader("Content-Transfer-Encoding", textBody.getEncoding());
             }
         } else if (mail.hasHtmlMessage()) {
-            HtmlMessageBody htmlMsg = mail.getHtmlMessage();
-            msg.setText(htmlMsg.getContent(), getMimeCharset(htmlMsg.getCharset()), HtmlMessageBody.getSubType());
-            if (htmlMsg.getEncoding() != null) {
-                msg.setHeader("Content-Transfer-Encoding", htmlMsg.getEncoding());
+            HtmlBody htmlBody = mail.getHtmlBody();
+            msg.setText(htmlBody.getContent(), mimeCharset(htmlBody.getCharset()), HtmlBody.getSubType());
+            if (htmlBody.getEncoding() != null) {
+                msg.setHeader("Content-Transfer-Encoding", htmlBody.getEncoding());
             }
         } else { // empty message
-            msg.setText("", TextMessageBody.getSubType());
+            msg.setText("", TextBody.getSubType());
         }
     }
 
-    private String getMimeCharset(Charset charset) {
+    private String mimeCharset(Charset charset) {
         if (charset == null) {
             return null;
         }
@@ -127,7 +127,7 @@ class MessageComposer {
         Multipart mixed = new MimeMultipart("mixed");
         if (mail.hasTextMessage() && mail.hasHtmlMessage()) {
             addMultipart(mixed, composeMultipartAlternative(mail));
-        } else if (mail.hasHtmlMessage() && mail.getHtmlMessage().hasInline()) {
+        } else if (mail.hasHtmlMessage() && mail.getHtmlBody().hasInline()) {
             addMultipart(mixed, composeMultipartRelated(mail));
         } else if (mail.hasTextMessage()) {
             mixed.addBodyPart(composeTextMessage(mail));
@@ -143,7 +143,7 @@ class MessageComposer {
     private Multipart composeMultipartAlternative(Mail mail) throws MessagingException, IOException {
         Multipart alternative = new MimeMultipart("alternative");
         alternative.addBodyPart(composeTextMessage(mail));
-        if (mail.getHtmlMessage().hasInline()) {
+        if (mail.getHtmlBody().hasInline()) {
             addMultipart(alternative, composeMultipartRelated(mail));
         } else {
             alternative.addBodyPart(composeHtmlMessage(mail));
@@ -154,7 +154,7 @@ class MessageComposer {
     private Multipart composeMultipartRelated(Mail mail) throws MessagingException, IOException {
         Multipart related = new MimeMultipart("related");
         related.addBodyPart(composeHtmlMessage(mail));
-        for (Inline inline : mail.getHtmlMessage().getInlines()) {
+        for (Inline inline : mail.getHtmlBody().getInlines()) {
             related.addBodyPart(composeInline(inline));
         }
         return related;
@@ -167,21 +167,21 @@ class MessageComposer {
     }
 
     private BodyPart composeTextMessage(Mail mail) throws MessagingException {
-        TextMessageBody textMsg = mail.getTextMessage();
+        TextBody textBody = mail.getTextBody();
         MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText(textMsg.getContent(), getMimeCharset(textMsg.getCharset()), TextMessageBody.getSubType());
-        if (textMsg.getEncoding() != null) {
-            bodyPart.setHeader("Content-Transfer-Encoding", textMsg.getEncoding());
+        bodyPart.setText(textBody.getContent(), mimeCharset(textBody.getCharset()), TextBody.getSubType());
+        if (textBody.getEncoding() != null) {
+            bodyPart.setHeader("Content-Transfer-Encoding", textBody.getEncoding());
         }
         return bodyPart;
     }
 
     private BodyPart composeHtmlMessage(Mail mail) throws MessagingException {
-        HtmlMessageBody htmlMsg = mail.getHtmlMessage();
+        HtmlBody htmlBody = mail.getHtmlBody();
         MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText(htmlMsg.getContent(), getMimeCharset(htmlMsg.getCharset()), HtmlMessageBody.getSubType());
-        if (htmlMsg.getEncoding() != null) {
-            bodyPart.setHeader("Content-Transfer-Encoding", htmlMsg.getEncoding());
+        bodyPart.setText(htmlBody.getContent(), mimeCharset(htmlBody.getCharset()), HtmlBody.getSubType());
+        if (htmlBody.getEncoding() != null) {
+            bodyPart.setHeader("Content-Transfer-Encoding", htmlBody.getEncoding());
         }
         return bodyPart;
     }
@@ -189,7 +189,7 @@ class MessageComposer {
     private BodyPart composeAttachment(Attachment attachment) throws MessagingException, IOException {
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setDisposition("attachment");
-        String mimeCharset = getMimeCharset(attachment.getCharset());
+        String mimeCharset = mimeCharset(attachment.getCharset());
         if (attachment.getFile() != null) {
             bodyPart.attachFile(attachment.getFile());
             setContentType(bodyPart, attachment.getMimeType(), mimeCharset);
