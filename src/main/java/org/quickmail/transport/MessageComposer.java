@@ -189,21 +189,21 @@ class MessageComposer {
     private BodyPart composeAttachment(Attachment attachment) throws MessagingException, IOException {
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setDisposition("attachment");
+        String mimeCharset = getMimeCharset(attachment.getCharset());
         if (attachment.getFile() != null) {
             bodyPart.attachFile(attachment.getFile());
-            if (attachment.getMimeType() != null) {
-                bodyPart.setHeader("Content-Type", attachment.getMimeType());
-            }
+            setContentType(bodyPart, attachment.getMimeType(), mimeCharset);
         } else {
             String mimeType = (attachment.getMimeType() != null) ? attachment.getMimeType() : DEFAULT_MIME_TYPE;
             DataSource dataSource = new ByteArrayDataSource(attachment.getInputStream(), mimeType);
             bodyPart.setDataHandler(new DataHandler(dataSource));
+            setContentType(bodyPart, mimeType, mimeCharset);
         }
         if (attachment.getEncoding() != null) {
             bodyPart.setHeader("Content-Transfer-Encoding", attachment.getEncoding());
         }
         try {
-            String filename = MimeUtility.encodeWord(attachment.getName(), getMimeCharset(attachment.getCharset()), "B");
+            String filename = MimeUtility.encodeWord(attachment.getName(), mimeCharset, "B");
             bodyPart.setFileName(filename);
         } catch (UnsupportedEncodingException e) {
             bodyPart.setFileName(attachment.getName());
@@ -216,9 +216,7 @@ class MessageComposer {
         bodyPart.setDisposition("inline");
         if (inline.getFile() != null) {
             bodyPart.attachFile(inline.getFile());
-            if (inline.getMimeType() != null) {
-                bodyPart.setHeader("Content-Type", inline.getMimeType());
-            }
+            setContentType(bodyPart, inline.getMimeType(), null);
         } else {
             String mimeType = (inline.getMimeType() != null) ? inline.getMimeType() : DEFAULT_MIME_TYPE;
             DataSource dataSource = new ByteArrayDataSource(inline.getInputStream(), mimeType);
@@ -231,5 +229,16 @@ class MessageComposer {
             bodyPart.setHeader("Content-Transfer-Encoding", inline.getEncoding());
         }
         return bodyPart;
+    }
+
+    private void setContentType(BodyPart bodyPart, String mimeType, String mimeCharset) throws MessagingException {
+        if (mimeType == null) {
+            return;
+        }
+        if (mimeCharset != null) {
+            bodyPart.setHeader("Content-Type", mimeType + "; charset=" + mimeCharset);
+        } else {
+            bodyPart.setHeader("Content-Type", mimeType);
+        }
     }
 }
