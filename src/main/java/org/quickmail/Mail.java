@@ -256,11 +256,11 @@ public class Mail {
         return this;
     }
 
-    public boolean hasTextMessage() {
+    public boolean hasTextBody() {
         return textBody != null;
     }
 
-    public boolean hasHtmlMessage() {
+    public boolean hasHtmlBody() {
         return htmlBody != null;
     }
 

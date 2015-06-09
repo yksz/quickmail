@@ -56,17 +56,17 @@ class MessageComposer {
     private void setMessageContent(Mail mail) throws MessagingException, IOException {
         if (mail.hasAttachment()) {
             msg.setContent(composeMultipartMixed(mail));
-        } else if (mail.hasTextMessage() && mail.hasHtmlMessage()) {
+        } else if (mail.hasTextBody() && mail.hasHtmlBody()) {
             msg.setContent(composeMultipartAlternative(mail));
-        } else if (mail.hasHtmlMessage() && mail.getHtmlBody().hasInline()){
+        } else if (mail.hasHtmlBody() && mail.getHtmlBody().hasInline()){
             msg.setContent(composeMultipartRelated(mail));
-        } else if (mail.hasTextMessage()) {
+        } else if (mail.hasTextBody()) {
             TextBody textBody = mail.getTextBody();
             msg.setText(textBody.getContent(), mimeCharset(textBody.getCharset()), TextBody.getSubType());
             if (textBody.getEncoding() != null) {
                 msg.setHeader("Content-Transfer-Encoding", textBody.getEncoding());
             }
-        } else if (mail.hasHtmlMessage()) {
+        } else if (mail.hasHtmlBody()) {
             HtmlBody htmlBody = mail.getHtmlBody();
             msg.setText(htmlBody.getContent(), mimeCharset(htmlBody.getCharset()), HtmlBody.getSubType());
             if (htmlBody.getEncoding() != null) {
@@ -103,14 +103,14 @@ class MessageComposer {
      */
     private Multipart composeMultipartMixed(Mail mail) throws MessagingException, IOException {
         Multipart mixed = new MimeMultipart("mixed");
-        if (mail.hasTextMessage() && mail.hasHtmlMessage()) {
+        if (mail.hasTextBody() && mail.hasHtmlBody()) {
             addMultipart(mixed, composeMultipartAlternative(mail));
-        } else if (mail.hasHtmlMessage() && mail.getHtmlBody().hasInline()) {
+        } else if (mail.hasHtmlBody() && mail.getHtmlBody().hasInline()) {
             addMultipart(mixed, composeMultipartRelated(mail));
-        } else if (mail.hasTextMessage()) {
-            mixed.addBodyPart(composeTextMessage(mail));
-        } else if (mail.hasHtmlMessage()) {
-            mixed.addBodyPart(composeHtmlMessage(mail));
+        } else if (mail.hasTextBody()) {
+            mixed.addBodyPart(composeTextBody(mail));
+        } else if (mail.hasHtmlBody()) {
+            mixed.addBodyPart(composeHtmlBody(mail));
         }
         for (Attachment attachment : mail.getAttachments()) {
             mixed.addBodyPart(composeAttachment(attachment));
@@ -120,18 +120,18 @@ class MessageComposer {
 
     private Multipart composeMultipartAlternative(Mail mail) throws MessagingException, IOException {
         Multipart alternative = new MimeMultipart("alternative");
-        alternative.addBodyPart(composeTextMessage(mail));
+        alternative.addBodyPart(composeTextBody(mail));
         if (mail.getHtmlBody().hasInline()) {
             addMultipart(alternative, composeMultipartRelated(mail));
         } else {
-            alternative.addBodyPart(composeHtmlMessage(mail));
+            alternative.addBodyPart(composeHtmlBody(mail));
         }
         return alternative;
     }
 
     private Multipart composeMultipartRelated(Mail mail) throws MessagingException, IOException {
         Multipart related = new MimeMultipart("related");
-        related.addBodyPart(composeHtmlMessage(mail));
+        related.addBodyPart(composeHtmlBody(mail));
         for (Inline inline : mail.getHtmlBody().getInlines()) {
             related.addBodyPart(composeInline(inline));
         }
@@ -144,7 +144,7 @@ class MessageComposer {
         dst.addBodyPart(bodyPart);
     }
 
-    private BodyPart composeTextMessage(Mail mail) throws MessagingException {
+    private BodyPart composeTextBody(Mail mail) throws MessagingException {
         TextBody textBody = mail.getTextBody();
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setText(textBody.getContent(), mimeCharset(textBody.getCharset()), TextBody.getSubType());
@@ -154,7 +154,7 @@ class MessageComposer {
         return bodyPart;
     }
 
-    private BodyPart composeHtmlMessage(Mail mail) throws MessagingException {
+    private BodyPart composeHtmlBody(Mail mail) throws MessagingException {
         HtmlBody htmlBody = mail.getHtmlBody();
         MimeBodyPart bodyPart = new MimeBodyPart();
         bodyPart.setText(htmlBody.getContent(), mimeCharset(htmlBody.getCharset()), HtmlBody.getSubType());
