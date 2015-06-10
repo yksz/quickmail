@@ -118,17 +118,23 @@ class MailAccessProtocolImpl implements MailAccessProtocol {
     }
 
     @Override
-    public Mail retrieveMessage(int messageNumber) throws MessagingException {
+    public Message retrieveMessage(int messageNumber) throws MessagingException {
         if (messageNumber < 1) {
             throw new IllegalArgumentException("messageNumber must not be less than 1");
         }
         if (folder == null || !folder.isOpen()) {
             throw new IllegalStateException("Not connecting to server");
         }
-        return convertToMail(folder.getMessage(messageNumber));
+        return folder.getMessage(messageNumber);
     }
 
-    private Mail convertToMail(Message message) throws MessagingException {
+    @Override
+    public Mail retrieveMailMessage(int messageNumber) throws MessagingException {
+        Message message = retrieveMessage(messageNumber);
+        return createMail(message);
+    }
+
+    private Mail createMail(Message message) throws MessagingException {
         ParserSelector selector = ParserSelector.getInstance();
         MessageParser parser = selector.selectParser(message);
         return parser.parse(message);

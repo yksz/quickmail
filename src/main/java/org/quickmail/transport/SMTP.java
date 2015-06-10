@@ -148,17 +148,21 @@ public class SMTP implements AutoCloseable {
         return transport.isConnected();
     }
 
-    public void send(Mail mail) throws MessagingException {
+    public void send(Message message) throws MessagingException {
+        Objects.requireNonNull(message, "message must not be null");
+        if (session == null || transport == null || !transport.isConnected()) {
+            throw new IllegalStateException("Not connecting to server");
+        }
+        transport.sendMessage(message, message.getAllRecipients());
+    }
+
+    public void send(Mail mail) throws MessagingException, IOException {
         Objects.requireNonNull(mail, "mail must not be null");
         if (session == null || transport == null || !transport.isConnected()) {
             throw new IllegalStateException("Not connecting to server");
         }
-        try {
-            Message message = new MessageComposer(session).compose(mail);
-            transport.sendMessage(message, message.getAllRecipients());
-        } catch (IOException e) {
-            throw new MessagingException("", e);
-        }
+        Message message = new MessageComposer(session).compose(mail);
+        transport.sendMessage(message, message.getAllRecipients());
     }
 
     public boolean isSslEnabled() {

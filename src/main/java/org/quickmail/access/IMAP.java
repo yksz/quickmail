@@ -1,5 +1,6 @@
 package org.quickmail.access;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.quickmail.Mail;
@@ -42,8 +43,13 @@ public class IMAP implements MailAccessProtocol {
     }
 
     @Override
-    public Mail retrieveMessage(int messageNumber) throws MessagingException {
+    public Message retrieveMessage(int messageNumber) throws MessagingException {
         return impl.retrieveMessage(messageNumber);
+    }
+
+    @Override
+    public Mail retrieveMailMessage(int messageNumber) throws MessagingException {
+        return impl.retrieveMailMessage(messageNumber);
     }
 
     @Override

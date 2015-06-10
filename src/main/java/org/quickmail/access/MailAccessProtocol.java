@@ -1,5 +1,6 @@
 package org.quickmail.access;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.quickmail.Mail;
@@ -11,7 +12,8 @@ public interface MailAccessProtocol extends AutoCloseable {
     void disconnect() throws MessagingException;
     boolean isConnected();
     int getMessageCount() throws MessagingException;
-    Mail retrieveMessage(int messageNumber) throws MessagingException;
+    Message retrieveMessage(int messageNumber) throws MessagingException;
+    Mail retrieveMailMessage(int messageNumber) throws MessagingException;
     void deleteMessage(int messageNumber) throws MessagingException;
     boolean isSslEnabled();
     void setSslEnabled(boolean sslEnabled);
