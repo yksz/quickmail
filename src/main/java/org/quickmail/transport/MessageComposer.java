@@ -202,7 +202,7 @@ class MessageComposer {
             bodyPart.setDataHandler(new DataHandler(dataSource));
         }
         if (inline.getId() != null) {
-            bodyPart.setHeader("Content-Id", inline.getId());
+            bodyPart.setHeader("Content-Id", "<" + inline.getId() + ">");
         }
         String encoding = (inline.getEncoding() != null) ? inline.getEncoding() : DEFAULT_INLINE_ENCODING;
         bodyPart.setHeader("Content-Transfer-Encoding", encoding);

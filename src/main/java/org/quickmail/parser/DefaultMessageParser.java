@@ -293,8 +293,17 @@ public class DefaultMessageParser implements MessageParser {
         ContentType contentType = new ContentType(part.getContentType());
         Inline inline = new Inline(part.getInputStream());
         inline.setMimeType(contentType.getBaseType());
-        inline.setId(part.getContentID());
+        inline.setId(getCid(part.getContentID()));
         inline.setEncoding(part.getEncoding());
         return inline;
+    }
+
+    private String getCid(String contentId) {
+        Pattern p = Pattern.compile("<(.+)>");
+        Matcher m = p.matcher(contentId);
+        if (m.find()) {
+            return m.group(1);
+        }
+        return null;
     }
 }
