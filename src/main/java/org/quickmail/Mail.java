@@ -10,6 +10,8 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeUtility;
+
 public class Mail {
     private InternetAddress fromAddr;
     private final List<InternetAddress> toAddrs = new LinkedList<>();
@@ -32,13 +34,15 @@ public class Mail {
         return this;
     }
 
-    public Mail setFrom(String address, String personal) throws AddressException, UnsupportedEncodingException {
+    public Mail setFrom(String address, String personal)
+            throws AddressException, UnsupportedEncodingException {
         this.fromAddr = new InternetAddress(address, personal);
         return this;
     }
 
-    public Mail setFrom(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
-        this.fromAddr = new InternetAddress(address, personal, charset);
+    public Mail setFrom(String address, String personal, Charset charset)
+            throws AddressException, UnsupportedEncodingException {
+        this.fromAddr = new InternetAddress(address, personal, mimeCharset(charset));
         return this;
     }
 
@@ -56,13 +60,15 @@ public class Mail {
         return this;
     }
 
-    public Mail addTo(String address, String personal) throws AddressException, UnsupportedEncodingException {
+    public Mail addTo(String address, String personal)
+            throws AddressException, UnsupportedEncodingException {
         this.toAddrs.add(new InternetAddress(address, personal));
         return this;
     }
 
-    public Mail addTo(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
-        this.toAddrs.add(new InternetAddress(address, personal, charset));
+    public Mail addTo(String address, String personal, Charset charset)
+            throws AddressException, UnsupportedEncodingException {
+        this.toAddrs.add(new InternetAddress(address, personal, mimeCharset(charset)));
         return this;
     }
 
@@ -97,13 +103,15 @@ public class Mail {
         return this;
     }
 
-    public Mail addCc(String address, String personal) throws AddressException, UnsupportedEncodingException {
+    public Mail addCc(String address, String personal)
+            throws AddressException, UnsupportedEncodingException {
         this.ccAddrs.add(new InternetAddress(address, personal));
         return this;
     }
 
-    public Mail addCc(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
-        this.ccAddrs.add(new InternetAddress(address, personal, charset));
+    public Mail addCc(String address, String personal, Charset charset)
+            throws AddressException, UnsupportedEncodingException {
+        this.ccAddrs.add(new InternetAddress(address, personal, mimeCharset(charset)));
         return this;
     }
 
@@ -138,13 +146,15 @@ public class Mail {
         return this;
     }
 
-    public Mail addBcc(String address, String personal) throws AddressException, UnsupportedEncodingException {
+    public Mail addBcc(String address, String personal)
+            throws AddressException, UnsupportedEncodingException {
         this.bccAddrs.add(new InternetAddress(address, personal));
         return this;
     }
 
-    public Mail addBcc(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
-        this.bccAddrs.add(new InternetAddress(address, personal, charset));
+    public Mail addBcc(String address, String personal, Charset charset)
+            throws AddressException, UnsupportedEncodingException {
+        this.bccAddrs.add(new InternetAddress(address, personal, mimeCharset(charset)));
         return this;
     }
 
@@ -179,13 +189,15 @@ public class Mail {
         return this;
     }
 
-    public Mail addReplyTo(String address, String personal) throws AddressException, UnsupportedEncodingException {
+    public Mail addReplyTo(String address, String personal)
+            throws AddressException, UnsupportedEncodingException {
         this.replyToAddrs.add(new InternetAddress(address, personal));
         return this;
     }
 
-    public Mail addReplyTo(String address, String personal, String charset) throws AddressException, UnsupportedEncodingException {
-        this.replyToAddrs.add(new InternetAddress(address, personal, charset));
+    public Mail addReplyTo(String address, String personal, Charset charset)
+            throws AddressException, UnsupportedEncodingException {
+        this.replyToAddrs.add(new InternetAddress(address, personal, mimeCharset(charset)));
         return this;
     }
 
@@ -209,6 +221,13 @@ public class Mail {
     public Mail clearReplyTo() {
         this.replyToAddrs.clear();
         return this;
+    }
+
+    private String mimeCharset(Charset charset) {
+        if (charset == null) {
+            return null;
+        }
+        return MimeUtility.mimeCharset(charset.name());
     }
 
     public Date getSentDate() {
