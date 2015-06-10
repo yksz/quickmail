@@ -27,7 +27,7 @@ import org.quickmail.TextBody;
 
 public class DefaultMessageParser implements MessageParser {
     @Override
-    public Mail parse(Message msg) throws MessagingException {
+    public Mail parse(Message msg) throws MessageParseException {
         Objects.requireNonNull(msg, "msg must not be null");
         Mail mail = new Mail();
         mail.setFrom(parseFrom(msg));
@@ -45,24 +45,41 @@ public class DefaultMessageParser implements MessageParser {
         return mail;
     }
 
-    protected InternetAddress parseFrom(Message msg) throws MessagingException {
-        InternetAddress[] from = (InternetAddress[]) msg.getFrom();
+    protected InternetAddress parseFrom(Message msg) throws MessageParseException {
+        InternetAddress[] from;
+        try {
+            from = (InternetAddress[]) msg.getFrom();
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse From", e);
+        }
         if (from == null || from.length == 0) {
             return null;
         }
         return from[0];
     }
 
-    protected InternetAddress[] parseTo(Message msg) throws MessagingException {
-        return parseRecipients(msg, RecipientType.TO);
+    protected InternetAddress[] parseTo(Message msg) throws MessageParseException {
+        try {
+            return parseRecipients(msg, RecipientType.TO);
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse To", e);
+        }
     }
 
-    protected InternetAddress[] parseCc(Message msg) throws MessagingException {
-        return parseRecipients(msg, RecipientType.CC);
+    protected InternetAddress[] parseCc(Message msg) throws MessageParseException {
+        try {
+            return parseRecipients(msg, RecipientType.CC);
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse Cc", e);
+        }
     }
 
-    protected InternetAddress[] parseBcc(Message msg) throws MessagingException {
-        return parseRecipients(msg, RecipientType.BCC);
+    protected InternetAddress[] parseBcc(Message msg) throws MessageParseException {
+        try {
+            return parseRecipients(msg, RecipientType.BCC);
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse Bcc", e);
+        }
     }
 
     private InternetAddress[] parseRecipients(Message msg, RecipientType type) throws MessagingException {
@@ -70,21 +87,39 @@ public class DefaultMessageParser implements MessageParser {
         return (addrs != null) ? addrs : new InternetAddress[0];
     }
 
-    protected InternetAddress[] parseReplyTo(Message msg) throws MessagingException {
-        InternetAddress[] addrs = (InternetAddress[]) msg.getReplyTo();
+    protected InternetAddress[] parseReplyTo(Message msg) throws MessageParseException {
+        InternetAddress[] addrs;
+        try {
+            addrs = (InternetAddress[]) msg.getReplyTo();
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse Reply-To");
+        }
         return (addrs != null) ? addrs : new InternetAddress[0];
     }
 
-    protected Date parseSentDate(Message msg) throws MessagingException {
-        return msg.getSentDate();
+    protected Date parseSentDate(Message msg) throws MessageParseException {
+        try {
+            return msg.getSentDate();
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse SentDate", e);
+        }
     }
 
-    protected String parseSubject(Message msg) throws MessagingException {
-        return msg.getSubject();
+    protected String parseSubject(Message msg) throws MessageParseException {
+        try {
+            return msg.getSubject();
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse Subject", e);
+        }
     }
 
-    protected Charset parseSubjectCharset(Message msg) throws MessagingException {
-        String[] subject = msg.getHeader("Subject");
+    protected Charset parseSubjectCharset(Message msg) throws MessageParseException {
+        String[] subject;
+        try {
+            subject = msg.getHeader("Subject");
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse SubjectCharset", e);
+        }
         if (subject == null || subject.length == 0) {
             return null;
         }
@@ -109,7 +144,7 @@ public class DefaultMessageParser implements MessageParser {
         return null;
     }
 
-    protected MessageContent parseMessageContent(Message msg) throws MessagingException {
+    protected MessageContent parseMessageContent(Message msg) throws MessageParseException {
         try {
             Object content = msg.getContent();
             MessageContent msgContent = new MessageContent();
@@ -120,11 +155,11 @@ public class DefaultMessageParser implements MessageParser {
                 parseTextpart((MimePart) msg, (String) content, msgContent);
                 return msgContent;
             } else {
-                ContentType ctype = new ContentType(msg.getContentType());
-                throw new MessagingException("Unknown content-type at root: " + ctype.getBaseType());
+                ContentType type = new ContentType(msg.getContentType());
+                throw new MessageParseException("Unknown content-type: " + type.getBaseType());
             }
-        } catch (IOException e) {
-            throw new MessagingException("", e);
+        } catch (Exception e) {
+            throw new MessageParseException("Failed to parse MessageContent", e);
         }
     }
 
@@ -179,8 +214,8 @@ public class DefaultMessageParser implements MessageParser {
         } else if (part.isMimeType("multipart/related")) {
             parseMultipartRelated(multipart, msgContent);
         } else {
-            ContentType ctype = new ContentType(part.getContentType());
-            throw new MessagingException("Not support this multipart: " + ctype.getBaseType());
+            ContentType type = new ContentType(part.getContentType());
+            throw new MessageParseException("Not support this multipart: " + type.getBaseType());
         }
     }
 
@@ -214,8 +249,8 @@ public class DefaultMessageParser implements MessageParser {
             } else if (content instanceof String) {
                 parseTextpart(part, (String) content, msgContent);
             } else {
-                ContentType ctype = new ContentType(part.getContentType());
-                throw new MessagingException("Unknown content-type at multipart/alternative: " + ctype.getBaseType());
+                ContentType type = new ContentType(part.getContentType());
+                throw new MessageParseException("Unknown content-type at multipart/alternative: " + type.getBaseType());
             }
         }
     }

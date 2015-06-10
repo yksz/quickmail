@@ -66,15 +66,15 @@ public class Mail {
         return this;
     }
 
-    public Mail addTo(InternetAddress address) {
-        this.toAddrs.add(address);
-        return this;
-    }
-
     public Mail addTo(String... addresses) throws AddressException {
         for (String address : addresses) {
             addTo(address);
         }
+        return this;
+    }
+
+    public Mail addTo(InternetAddress address) {
+        this.toAddrs.add(address);
         return this;
     }
 
@@ -114,7 +114,12 @@ public class Mail {
         return this;
     }
 
-    public Mail addCc(InternetAddress... addresses) throws AddressException {
+    public Mail addCc(InternetAddress address) {
+        this.ccAddrs.add(address);
+        return this;
+    }
+
+    public Mail addCc(InternetAddress... addresses) {
         this.ccAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
@@ -150,7 +155,12 @@ public class Mail {
         return this;
     }
 
-    public Mail addBcc(InternetAddress... addresses) throws AddressException {
+    public Mail addBcc(InternetAddress address) {
+        this.bccAddrs.add(address);
+        return this;
+    }
+
+    public Mail addBcc(InternetAddress... addresses) {
         this.bccAddrs.addAll(Arrays.asList(addresses));
         return this;
     }
@@ -186,7 +196,12 @@ public class Mail {
         return this;
     }
 
-    public Mail addReplyTo(InternetAddress... addresses) throws AddressException {
+    public Mail addReplyTo(InternetAddress address) {
+        this.replyToAddrs.add(address);
+        return this;
+    }
+
+    public Mail addReplyTo(InternetAddress... addresses) {
         this.replyToAddrs.addAll(Arrays.asList(addresses));
         return this;
     }

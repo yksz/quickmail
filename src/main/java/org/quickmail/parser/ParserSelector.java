@@ -21,14 +21,16 @@ public final class ParserSelector {
     private ParserSelector() {
     }
 
-    public MessageParser selectParser(Message message) throws MessagingException {
+    public MessageParser selectParser(Message message) {
         Objects.requireNonNull(message, "message must not be null");
         synchronized (lock) {
-            MessageParser parser = selectParserByRules(message);
-            if (parser != null) {
-                return parser;
+            MessageParser parser;
+            try {
+                parser = selectParserByRules(message);
+            } catch (MessagingException ignore) {
+                return getDefaultParser();
             }
-            return getDefaultParser();
+            return (parser != null) ? parser : getDefaultParser();
         }
     }
 
