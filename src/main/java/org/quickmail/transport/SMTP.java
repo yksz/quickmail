@@ -96,15 +96,19 @@ public class SMTP implements AutoCloseable {
      * Connect By POP before SMTP.
      *
      * @param host
+     * @param pop3Host
      * @param user
      * @param password
      * @throws MessagingException
      */
-    public void connectByPbS(String host, String user, String password) throws MessagingException {
+    public void connectByPbS(String host, String pop3Host, String user, String password)
+            throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
-        Properties props = createSessionProperties(host, PORT_POP3, PORT_POP3S, false);
+        Objects.requireNonNull(pop3Host, "pop3Host must not be null");
+        Properties props = createSessionProperties(host, PORT_SMTP, PORT_SMTPS, false);
         session = Session.getInstance(props);
-        connectByPOP3(session, user, password);
+        int pop3Port = sslEnabled ? PORT_POP3S : PORT_POP3;
+        connectByPOP3(session, pop3Host, pop3Port, user, password);
         connect(session);
     }
 
@@ -113,21 +117,26 @@ public class SMTP implements AutoCloseable {
      *
      * @param host
      * @param port
+     * @param pop3Host
+     * @param pop3Port
      * @param user
      * @param password
      * @throws MessagingException
      */
-    public void connectByPbS(String host, int port, String user, String password) throws MessagingException {
+    public void connectByPbS(String host, int port, String pop3Host, int pop3Port, String user, String password)
+            throws MessagingException {
         Objects.requireNonNull(host, "host must not be null");
+        Objects.requireNonNull(pop3Host, "pop3Host must not be null");
         Properties props = createSessionProperties(host, port, port, false);
         session = Session.getInstance(props);
-        connectByPOP3(session, user, password);
+        connectByPOP3(session, pop3Host, pop3Port, user, password);
         connect(session);
     }
 
-    private void connectByPOP3(Session session, String user, String password) throws MessagingException {
+    private void connectByPOP3(Session session, String host, int port, String user, String password)
+            throws MessagingException {
         store = session.getStore(PROTOCOL_POP3);
-        store.connect(user, password);
+        store.connect(host, port, user, password);
     }
 
     public void disconnect() throws MessagingException {
