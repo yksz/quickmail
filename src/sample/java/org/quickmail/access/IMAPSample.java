@@ -17,7 +17,7 @@ public class IMAPSample {
             imap.connect(HOST, USER, PASSWORD);
             int msgCount = imap.getMessageCount();
             for (int msgNum = msgCount; msgNum > msgCount - MAX_NUM; msgNum--) {
-                Mail mail = imap.retrieveMailMessage(msgNum);
+                Mail mail = imap.retrieveMail(msgNum);
                 System.out.println(mail);
             }
         }

@@ -13,7 +13,7 @@ public interface MailAccessProtocol extends AutoCloseable {
     boolean isConnected();
     int getMessageCount() throws MessagingException;
     Message retrieveMessage(int messageNumber) throws MessagingException;
-    Mail retrieveMailMessage(int messageNumber) throws MessagingException;
+    Mail retrieveMail(int messageNumber) throws MessagingException;
     void deleteMessage(int messageNumber) throws MessagingException;
     boolean isSslEnabled();
     void setSslEnabled(boolean sslEnabled);

@@ -129,7 +129,7 @@ class MailAccessProtocolImpl implements MailAccessProtocol {
     }
 
     @Override
-    public Mail retrieveMailMessage(int messageNumber) throws MessagingException {
+    public Mail retrieveMail(int messageNumber) throws MessagingException {
         Message message = retrieveMessage(messageNumber);
         return createMail(message);
     }

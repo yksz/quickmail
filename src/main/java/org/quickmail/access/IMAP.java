@@ -48,8 +48,8 @@ public class IMAP implements MailAccessProtocol {
     }
 
     @Override
-    public Mail retrieveMailMessage(int messageNumber) throws MessagingException {
-        return impl.retrieveMailMessage(messageNumber);
+    public Mail retrieveMail(int messageNumber) throws MessagingException {
+        return impl.retrieveMail(messageNumber);
     }
 
     @Override

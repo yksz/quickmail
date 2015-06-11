@@ -17,7 +17,7 @@ public class POP3Sample {
             pop3.connect(HOST, USER, PASSWORD);
             int msgCount = pop3.getMessageCount();
             for (int msgNum = msgCount; msgNum > msgCount - MAX_NUM; msgNum--) {
-                Mail mail = pop3.retrieveMailMessage(msgNum);
+                Mail mail = pop3.retrieveMail(msgNum);
                 System.out.println(mail);
             }
         }
