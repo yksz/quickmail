@@ -31,7 +31,7 @@ public class MessageComposerTest {
     }
 
     @Test
-    public void testCompose() throws MessagingException, IOException {
+    public void testCompose_WhenMailHasAll() throws MessagingException, IOException {
         // setup:
         String inlineContent = MailAssertUtils.EXPECTED_INLINE_CONTENT;
         String attachmentContent = MailAssertUtils.EXPECTED_ATTACHMENT_CONTENT;
@@ -55,6 +55,114 @@ public class MessageComposerTest {
                                 .setMimeType("image/png")
                                 .setId("inline_id")
                                 .setEncoding("base64")))
+                .addAttachment(new Attachment(new ByteArrayInputStream(attachmentContent.getBytes()))
+                        .setMimeType("text/plain")
+                        .setCharset(Charset.defaultCharset())
+                        .setName("attachment.txt")
+                        .setEncoding("base64"));
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenMailHasTextBody() throws MessagingException, IOException {
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("text body")
+                .setTextBody(new TextBody("text body")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"));
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenMailHasHtmlBody() throws MessagingException, IOException {
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("html body")
+                .setHtmlBody(new HtmlBody("html body")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"));
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenMailHasTextAndHtmlBody() throws MessagingException, IOException {
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("text and html body")
+                .setTextBody(new TextBody("")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"))
+                .setHtmlBody(new HtmlBody("html body")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"));
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenMailHasInline() throws MessagingException, IOException {
+        // setup:
+        String inlineContent = MailAssertUtils.EXPECTED_INLINE_CONTENT;
+
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("inline")
+                .setHtmlBody(new HtmlBody("html body")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit")
+                        .addInline(new Inline(new ByteArrayInputStream(inlineContent.getBytes()))
+                                .setMimeType("image/png")
+                                .setId("inline_id")
+                                .setEncoding("base64")));
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenMailHasAttachment() throws MessagingException, IOException {
+        // setup:
+        String attachmentContent = MailAssertUtils.EXPECTED_ATTACHMENT_CONTENT;
+
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("attachment")
+                .setTextBody(new TextBody("")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"))
                 .addAttachment(new Attachment(new ByteArrayInputStream(attachmentContent.getBytes()))
                         .setMimeType("text/plain")
                         .setCharset(Charset.defaultCharset())
