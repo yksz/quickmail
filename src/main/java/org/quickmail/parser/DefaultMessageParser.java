@@ -155,8 +155,8 @@ public class DefaultMessageParser implements MessageParser {
                 parseTextpart((MimePart) msg, (String) content, msgContent);
                 return msgContent;
             } else {
-                ContentType type = new ContentType(msg.getContentType());
-                throw new MessageParseException("Unknown content-type: " + type.getBaseType());
+                ContentType contentType = new ContentType(msg.getContentType());
+                throw new MessageParseException("Unknown content-type: " + contentType.getBaseType());
             }
         } catch (Exception e) {
             throw new MessageParseException("Failed to parse MessageContent", e);
@@ -206,16 +206,16 @@ public class DefaultMessageParser implements MessageParser {
      */
     private void parseMultipart(Multipart multipart, MessageContent msgContent)
             throws MessagingException, IOException {
-        MimePart part = (MimePart) multipart.getParent();
-        if (part.isMimeType("multipart/mixed")) {
+        ContentType contentType = new ContentType(multipart.getContentType());
+        String subType = contentType.getSubType();
+        if (subType.equalsIgnoreCase("mixed")) {
             parseMultipartMixed(multipart, msgContent);
-        } else if (part.isMimeType("multipart/alternative")) {
+        } else if (subType.equalsIgnoreCase("alternative")) {
             parseMultipartAlternative(multipart, msgContent);
-        } else if (part.isMimeType("multipart/related")) {
+        } else if (subType.equalsIgnoreCase("related")) {
             parseMultipartRelated(multipart, msgContent);
         } else {
-            ContentType type = new ContentType(part.getContentType());
-            throw new MessageParseException("Not support this multipart: " + type.getBaseType());
+            throw new MessageParseException("Not support this multipart: " + contentType.getBaseType());
         }
     }
 
@@ -232,7 +232,7 @@ public class DefaultMessageParser implements MessageParser {
                     parseMultipart((Multipart) content, msgContent);
                 } else if (content instanceof String) {
                     parseTextpart(part, (String) content, msgContent);
-                } else {
+                } else { // attachment
                     msgContent.addAttachment(createAttachment(part));
                 }
             }
@@ -249,8 +249,9 @@ public class DefaultMessageParser implements MessageParser {
             } else if (content instanceof String) {
                 parseTextpart(part, (String) content, msgContent);
             } else {
-                ContentType type = new ContentType(part.getContentType());
-                throw new MessageParseException("Unknown content-type at multipart/alternative: " + type.getBaseType());
+                ContentType contentType = new ContentType(part.getContentType());
+                throw new MessageParseException("Unknown content-type at multipart/alternative: "
+                        + contentType.getBaseType());
             }
         }
     }
@@ -260,13 +261,18 @@ public class DefaultMessageParser implements MessageParser {
         List<Inline> inlines= new LinkedList<>();
         for (int i = 0; i < multipart.getCount(); i++) {
             MimePart part = (MimePart) multipart.getBodyPart(i);
-            Object content = part.getContent();
-            if (content instanceof Multipart) {
-                parseMultipart((Multipart) content, msgContent);
-            } else if (content instanceof String) {
-                parseTextpart(part, (String) content, msgContent);
-            } else { // inline
+            String disp = part.getDisposition();
+            if (disp != null && disp.equalsIgnoreCase(Part.INLINE)) { // inline
                 inlines.add(createInline(part));
+            } else {
+                Object content = part.getContent();
+                if (content instanceof Multipart) {
+                    parseMultipart((Multipart) content, msgContent);
+                } else if (content instanceof String) {
+                    parseTextpart(part, (String) content, msgContent);
+                } else { // inline
+                    inlines.add(createInline(part));
+                }
             }
         }
         if (msgContent.getHtmlBody() != null) {
