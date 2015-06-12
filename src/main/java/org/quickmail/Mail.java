@@ -9,8 +9,7 @@ import java.util.List;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
-import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeUtility;
+import javax.mail.internet.MimeUtility;
 
 public class Mail {
     private InternetAddress fromAddr;
