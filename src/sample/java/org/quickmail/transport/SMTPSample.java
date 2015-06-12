@@ -15,8 +15,8 @@ public class SMTPSample {
         try (SMTP smtp = new SMTP()) {
             smtp.connect(HOST);
             smtp.send(new Mail()
-                    .setFrom("no-reply@example.org")
                     .addTo(TO_ADDRESS)
+                    .setFrom("no-reply@example.org")
                     .setSubject("SMTP Sample"));
         }
     }
