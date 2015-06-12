@@ -3,7 +3,8 @@ apply plugin: 'jacoco'
 apply plugin: 'eclipse'
 
 sourceCompatibility = 1.7
-version = '1.0'
+targetCompatibility = 1.7
+version = '0.1.0'
 
 repositories {
     mavenCentral()
@@ -14,3 +15,4 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+jar.baseName = 'quickmail'
