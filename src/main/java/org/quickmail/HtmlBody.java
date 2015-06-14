@@ -57,16 +57,16 @@ public class HtmlBody {
         return this;
     }
 
-    public HtmlBody addInline(Inline... inlines) {
-        return addInline(Arrays.asList(inlines));
+    public HtmlBody addInlines(Inline... inlines) {
+        return addInlines(Arrays.asList(inlines));
     }
 
-    public HtmlBody addInline(List<Inline> inlines) {
+    public HtmlBody addInlines(List<Inline> inlines) {
         this.inlines.addAll(inlines);
         return this;
     }
 
-    public HtmlBody clearInline() {
+    public HtmlBody clearInlines() {
         this.inlines.clear();
         return this;
     }

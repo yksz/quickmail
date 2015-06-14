@@ -305,16 +305,16 @@ public class Mail {
         return this;
     }
 
-    public Mail addAttachment(Attachment... attachments) {
-        return addAttachment(Arrays.asList(attachments));
+    public Mail addAttachments(Attachment... attachments) {
+        return addAttachments(Arrays.asList(attachments));
     }
 
-    public Mail addAttachment(List<Attachment> attachments) {
+    public Mail addAttachments(List<Attachment> attachments) {
         this.attachments.addAll(attachments);
         return this;
     }
 
-    public Mail clearAttachment() {
+    public Mail clearAttachments() {
         this.attachments.clear();
         return this;
     }

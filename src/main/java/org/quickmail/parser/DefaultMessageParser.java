@@ -41,7 +41,7 @@ public class DefaultMessageParser implements MessageParser {
         MessageContent msgContent = parseMessageContent(msg);
         mail.setTextBody(msgContent.getTextBody());
         mail.setHtmlBody(msgContent.getHtmlBody());
-        mail.addAttachment(msgContent.getAttachments());
+        mail.addAttachments(msgContent.getAttachments());
         return mail;
     }
 
@@ -276,7 +276,7 @@ public class DefaultMessageParser implements MessageParser {
             }
         }
         if (msgContent.getHtmlBody() != null) {
-            msgContent.getHtmlBody().addInline(inlines);
+            msgContent.getHtmlBody().addInlines(inlines);
         }
     }
 
