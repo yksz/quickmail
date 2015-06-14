@@ -11,6 +11,7 @@ import javax.mail.Store;
 import javax.mail.Transport;
 
 import org.quickmail.Mail;
+import org.quickmail.composer.MessageComposer;
 
 public class SMTP implements AutoCloseable {
     static final String PROTOCOL_SMTP = "smtp";

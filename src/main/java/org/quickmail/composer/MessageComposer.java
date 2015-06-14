@@ -1,4 +1,4 @@
-package org.quickmail.transport;
+package org.quickmail.composer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,19 +28,20 @@ import org.quickmail.Inline;
 import org.quickmail.Mail;
 import org.quickmail.TextBody;
 
-class MessageComposer {
+public class MessageComposer {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
     private static final String DEFAULT_ATTACHMENT_ENCODING = "base64";
     private static final String DEFAULT_INLINE_ENCODING = "base64";
 
-    private MimeMessage msg;
+    private final Session session;
 
     public MessageComposer(Session session) {
-        this.msg = new MimeMessage(Objects.requireNonNull(session, "session must not be null"));
+        this.session = Objects.requireNonNull(session, "session must not be null");
     }
 
     public Message compose(Mail mail) throws MessagingException, IOException {
         Objects.requireNonNull(mail, "mail must not be null");
+        MimeMessage msg = new MimeMessage(session);
         msg.setFrom(mail.getFrom());
         msg.setRecipients(RecipientType.TO, toInternetAddressArray(mail.getTo()));
         msg.setRecipients(RecipientType.CC, toInternetAddressArray(mail.getCc()));
@@ -48,7 +49,7 @@ class MessageComposer {
         msg.setReplyTo(toInternetAddressArray(mail.getReplyTo()));
         msg.setSentDate(getSentDate(mail));
         msg.setSubject(mail.getSubject(), mimeCharset(mail.getSubjectCharset()));
-        setMessageContent(mail);
+        setMessageContent(mail, msg);
         msg.saveChanges();
         return msg;
     }
@@ -64,7 +65,7 @@ class MessageComposer {
         return mail.getSentDate();
     }
 
-    private void setMessageContent(Mail mail) throws MessagingException, IOException {
+    private void setMessageContent(Mail mail, MimeMessage msg) throws MessagingException, IOException {
         if (mail.hasAttachment()) {
             msg.setContent(composeMultipartMixed(mail));
         } else if (mail.hasTextBody() && mail.hasHtmlBody()) {

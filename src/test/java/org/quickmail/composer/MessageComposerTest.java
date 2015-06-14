@@ -1,4 +1,4 @@
-package org.quickmail.transport;
+package org.quickmail.composer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
