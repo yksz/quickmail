@@ -19,6 +19,14 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+sourceSets {
+    test {
+        java {
+            srcDir 'src/sample/java'
+        }
+    }
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
      classifier = 'sources'
      from sourceSets.main.allSource
