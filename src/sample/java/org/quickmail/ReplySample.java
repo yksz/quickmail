@@ -1,8 +1,10 @@
 package org.quickmail;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.quickmail.access.IMAP;
 import org.quickmail.transport.SMTP;
@@ -23,8 +25,9 @@ public class ReplySample {
             int msgCount = imap.getMessageCount();
             if (msgCount > 0) {
                 Mail mail = imap.retrieveMail(msgCount);
-                mail.clearTo()
-                        .addTo(mail.getReplyTo())
+                List<InternetAddress> replyTo = mail.getReplyTo();
+                mail.clearAllAddresses()
+                        .addTo(replyTo)
                         .setFrom("no-reply@example.org")
                         .setSubject("Re:" + mail.getSubject());
                 smtp.setSslEnabled(true);

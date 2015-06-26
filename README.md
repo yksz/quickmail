@@ -67,8 +67,9 @@ try (IMAP imap = new IMAP(); SMTP smtp = new SMTP()) {
     int msgCount = imap.getMessageCount();
     if (msgCount > 0) {
         Mail mail = imap.retrieveMail(msgCount);
-        mail.clearTo()
-                .addTo(mail.getReplyTo())
+        List<InternetAddress> replyTo = mail.getReplyTo();
+        mail.clearAllAddresses()
+                .addTo(replyTo)
                 .setFrom("no-reply@example.org")
                 .setSubject("Re:" + mail.getSubject());
         smtp.setSslEnabled(true);

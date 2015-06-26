@@ -282,6 +282,22 @@ public class Mail {
         return MimeUtility.mimeCharset(charset.name());
     }
 
+    public Mail clearAllRecipients() {
+        this.toAddrs.clear();
+        this.ccAddrs.clear();
+        this.bccAddrs.clear();
+        return this;
+    }
+
+    public Mail clearAllAddresses() {
+        this.fromAddr = null;
+        this.toAddrs.clear();
+        this.ccAddrs.clear();
+        this.bccAddrs.clear();
+        this.replyToAddrs.clear();
+        return this;
+    }
+
     public Date getSentDate() {
         return sentDate;
     }
