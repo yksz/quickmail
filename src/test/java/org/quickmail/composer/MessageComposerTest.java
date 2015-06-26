@@ -33,8 +33,8 @@ public class MessageComposerTest {
     @Test
     public void testCompose_WhenMailHasAll() throws MessagingException, IOException {
         // setup:
-        String inlineContent = MailAssertUtils.EXPECTED_INLINE_CONTENT;
-        String attachmentContent = MailAssertUtils.EXPECTED_ATTACHMENT_CONTENT;
+        String inlineContent = MailAssert.EXPECTED_INLINE_CONTENT;
+        String attachmentContent = MailAssert.EXPECTED_ATTACHMENT_CONTENT;
 
         // when:
         Mail mail = new Mail()
@@ -66,7 +66,7 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
@@ -123,13 +123,13 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
     public void testCompose_WhenMailHasInline() throws MessagingException, IOException {
         // setup:
-        String inlineContent = MailAssertUtils.EXPECTED_INLINE_CONTENT;
+        String inlineContent = MailAssert.EXPECTED_INLINE_CONTENT;
 
         // when:
         Mail mail = new Mail()
@@ -148,13 +148,13 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
     public void testCompose_WhenMailHasAttachment() throws MessagingException, IOException {
         // setup:
-        String attachmentContent = MailAssertUtils.EXPECTED_ATTACHMENT_CONTENT;
+        String attachmentContent = MailAssert.EXPECTED_ATTACHMENT_CONTENT;
 
         // when:
         Mail mail = new Mail()
@@ -174,11 +174,11 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertMailStrictEquals(mail, parsedMail);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 
     @Test
-    public void testCompose_IfEmptyMail() throws MessagingException, IOException {
+    public void testCompose_WhenMailIsEmpty() throws MessagingException, IOException {
         // when:
         Mail mail = new Mail();
 
@@ -187,6 +187,25 @@ public class MessageComposerTest {
 
         // then:
         Mail parsedMail = parser.parse(msg);
-        MailAssertUtils.assertEmptyMailEquals(mail, parsedMail);
+        MailAssert.assertEmptyMailEquals(mail, parsedMail);
+    }
+
+    @Test
+    public void testCompose_WhenAddingHeader() throws MessagingException, IOException {
+        // when:
+        Mail mail = new Mail()
+                .setSentDate(new Date(1500000000000L))
+                .setSubject("text body")
+                .setTextBody(new TextBody("text body")
+                        .setCharset(Charset.defaultCharset())
+                        .setEncoding("7bit"))
+                .addHeader("X-Mailer", "test mailer");
+
+        // and:
+        Message msg = composer.compose(mail);
+
+        // then:
+        Mail parsedMail = parser.parse(msg);
+        MailAssert.assertMailStrictEquals(mail, parsedMail);
     }
 }

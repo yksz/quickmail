@@ -9,13 +9,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import javax.mail.Header;
+
 import org.quickmail.Attachment;
 import org.quickmail.HtmlBody;
 import org.quickmail.Inline;
 import org.quickmail.Mail;
 import org.quickmail.TextBody;
 
-class MailAssertUtils {
+class MailAssert {
     static final String EXPECTED_INLINE_CONTENT = "inline";
     static final String EXPECTED_ATTACHMENT_CONTENT = "attachment";
 
@@ -24,6 +26,7 @@ class MailAssertUtils {
     }
 
     static void assertMailStrictEquals(Mail expected, Mail actual) throws IOException {
+        assertHeadersEquals(expected.getHeaders(), actual.getHeaders());
         assertEquals(expected.getFrom(), actual.getFrom());
         assertListEquals(expected.getTo(), actual.getTo());
         assertListEquals(expected.getCc(), actual.getCc());
@@ -35,6 +38,22 @@ class MailAssertUtils {
         assertTextBodyEquals(expected.getTextBody(), actual.getTextBody());
         assertHtmlBodyEquals(expected.getHtmlBody(), actual.getHtmlBody());
         assertAttachmentsEquals(expected.getAttachments(), actual.getAttachments());
+    }
+
+    static void assertHeadersEquals(List<Header> expected, List<Header> actual) {
+        for (Header header : expected) {
+            String actualValue = getHeader(actual, header.getName());
+            assertEquals(header.getValue(), actualValue);
+        }
+    }
+
+    private static String getHeader(List<Header> headers, String name) {
+        for (Header header : headers) {
+            if (header.getName().equals(name)) {
+                return header.getValue();
+            }
+        }
+        return null;
     }
 
     static void assertTextBodyEquals(TextBody expected, TextBody actual) {
