@@ -3,12 +3,14 @@ package org.quickmail.parser;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -30,6 +32,7 @@ public class DefaultMessageParser implements MessageParser {
     public Mail parse(Message msg) throws MessageParseException {
         Objects.requireNonNull(msg, "msg must not be null");
         Mail mail = new Mail();
+        mail.addHeaders(parseHeaders(msg));
         mail.setFrom(parseFrom(msg));
         mail.addTo(parseTo(msg));
         mail.addCc(parseCc(msg));
@@ -43,6 +46,20 @@ public class DefaultMessageParser implements MessageParser {
         mail.setHtmlBody(msgContent.getHtmlBody());
         mail.addAttachments(msgContent.getAttachments());
         return mail;
+    }
+
+    protected List<Header> parseHeaders(Message msg) throws MessageParseException {
+        List<Header> headers = new LinkedList<>();
+        try {
+            @SuppressWarnings("unchecked")
+            Enumeration<Header> e = msg.getAllHeaders();
+            while (e.hasMoreElements()) {
+                headers.add(e.nextElement());
+            }
+        } catch (MessagingException e) {
+            throw new MessageParseException("Failed to parse Headers", e);
+        }
+        return headers;
     }
 
     protected InternetAddress parseFrom(Message msg) throws MessageParseException {

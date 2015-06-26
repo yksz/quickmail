@@ -6,12 +6,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import javax.mail.Header;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
 
 public class Mail {
+    private final List<Header> headers = new LinkedList<>();
     private InternetAddress fromAddr;
     private final List<InternetAddress> toAddrs = new LinkedList<>();
     private final List<InternetAddress> ccAddrs = new LinkedList<>();
@@ -23,6 +27,39 @@ public class Mail {
     private TextBody textBody;
     private HtmlBody htmlBody;
     private final List<Attachment> attachments = new LinkedList<>();
+
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
+    public Mail addHeader(String name, String value) {
+        Objects.requireNonNull(name, "name must not be null");
+        Objects.requireNonNull(value, "value must not be null");
+        headers.add(new Header(name, value));
+        return this;
+    }
+
+    public Mail addHeader(Header header) {
+        this.headers.add(header);
+        return this;
+    }
+
+    public Mail addHeaders(Map<String, String> headers) {
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            addHeader(entry.getKey(), entry.getValue());
+        }
+        return this;
+    }
+
+    public Mail addHeaders(List<Header> headers) {
+        this.headers.addAll(headers);
+        return this;
+    }
+
+    public Mail clearHeaders() {
+        this.headers.clear();
+        return this;
+    }
 
     public InternetAddress getFrom() {
         return fromAddr;
@@ -282,8 +319,8 @@ public class Mail {
         return textBody;
     }
 
-    public Mail setTextBody(TextBody message) {
-        this.textBody = message;
+    public Mail setTextBody(TextBody textBody) {
+        this.textBody = textBody;
         return this;
     }
 
@@ -291,8 +328,8 @@ public class Mail {
         return htmlBody;
     }
 
-    public Mail setHtmlBody(HtmlBody message) {
-        this.htmlBody = message;
+    public Mail setHtmlBody(HtmlBody htmlBody) {
+        this.htmlBody = htmlBody;
         return this;
     }
 

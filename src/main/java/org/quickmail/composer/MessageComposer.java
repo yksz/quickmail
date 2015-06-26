@@ -10,6 +10,7 @@ import java.util.Objects;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
+import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -50,6 +51,9 @@ public class MessageComposer {
         msg.setSentDate(getSentDate(mail));
         msg.setSubject(mail.getSubject(), mimeCharset(mail.getSubjectCharset()));
         setMessageContent(mail, msg);
+        for (Header header : mail.getHeaders()) {
+            msg.addHeader(header.getName(), header.getValue());
+        }
         msg.saveChanges();
         return msg;
     }
