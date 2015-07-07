@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.quickmail:quickmail:0.1.0'
+    compile 'org.quickmail:quickmail:0.2.0'
 }
 ```
 
@@ -25,7 +25,7 @@ dependencies {
 <dependency>
     <groupId>org.quickmail</groupId>
     <artifactId>quickmail</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
