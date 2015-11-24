@@ -1,10 +1,11 @@
+[![Build Status](https://travis-ci.org/yksz/quickmail.svg?branch=master)](https://travis-ci.org/yksz/quickmail)
+
 QuickMail
 ==========
 QuickMail is a simple JavaMail wrapper.  
 This library can parse email messages more quickly.
 
-Installation
-============
+## Installation
 ### Gradle
 ```
 repositories {
@@ -29,8 +30,7 @@ dependencies {
 </dependency>
 ```
 
-Example - Receive Mail
-===================
+## Example - Receive Mail
 ```java
 try (POP3 pop3 = new POP3()){
     pop3.connect("pop3.example.org", "user", "password");
@@ -45,8 +45,7 @@ try (POP3 pop3 = new POP3()){
 }
 ```
 
-Example - Send Mail
-===================
+## Example - Send Mail
 ```java
 try (SMTP smtp = new SMTP()) {
     smtp.connect("smtp.example.org");
@@ -58,8 +57,7 @@ try (SMTP smtp = new SMTP()) {
 }
 ```
 
-Example - Reply Mail
-====================
+## Example - Reply Mail
 ```java
 try (IMAP imap = new IMAP(); SMTP smtp = new SMTP()) {
     imap.setSslEnabled(true);
@@ -79,10 +77,8 @@ try (IMAP imap = new IMAP(); SMTP smtp = new SMTP()) {
 }
 ```
 
-System Requirements
-===================
+## System Requirements
 JDK version 1.7 or above
 
-License
-=======
+## License
 QuickMail is released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html).
